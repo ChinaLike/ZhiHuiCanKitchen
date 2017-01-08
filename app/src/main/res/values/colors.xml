@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#3F51B5</color>
+    <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorAccent">#FF4081</color>
+
+    <!--白色-->
+    <color name="white">#FFFFFF</color>
+
+    <!--缩略图背景-->
+    <color name="breviary_bg">#1CBCA0</color>
+    <color name="breviary_shadow">#F0F3F2</color>
+
+    <!--标签-打印背景-->
+    <color name="lable_food_bg">#FE9F1B</color>
+    <!--标签-菜品背景-->
+    <color name="lable_print_bg">#3C3C3C</color>
+
+    <!--圆形控件颜色-->
+    <color name="orange">#FE9F1B</color>
+
+    <!--小票Item-->
+    <color name="print_item_text">#3c3c3c</color>
+    <color name="print_item_text_time">#d4d8d7</color>
+
+    <!--菜品Item-->
+    <color name="food_item_text">#3c3c3c</color>
+
+    <!--分割线颜色-->
+    <color name="line">#D7DBDA</color>
+
+</resources>

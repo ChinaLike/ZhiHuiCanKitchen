@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="@dimen/lable_width"
+    android:layout_height="@dimen/lable_height"
+    android:background="@color/lable_food_bg"
+    android:gravity="center">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="待上菜品"
+        android:textColor="@color/white"
+        android:textSize="@dimen/lable_text_size" />
+
+</LinearLayout>
