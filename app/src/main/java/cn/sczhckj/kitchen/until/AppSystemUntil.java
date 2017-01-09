@@ -58,4 +58,17 @@ public class AppSystemUntil {
         WindowManager wm = (WindowManager) mContext.getSystemService(Context.WINDOW_SERVICE);
         return wm.getDefaultDisplay().getHeight();
     }
+
+    /**
+     * 获取软件版本号
+     */
+    public static int getVersionCode(Context mContext) {
+        int verCode = -1;
+        try {
+            verCode = mContext.getPackageManager().getPackageInfo(mContext.getPackageName(), 0).versionCode;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return verCode;
+    }
 }

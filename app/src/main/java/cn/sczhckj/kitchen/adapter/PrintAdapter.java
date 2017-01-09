@@ -17,6 +17,7 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import cn.sczhckj.kitchen.R;
 import cn.sczhckj.kitchen.data.bean.kitchen.DoneBean;
+import cn.sczhckj.kitchen.listenner.OnItemClickListenner;
 
 /**
  * @ describe:
@@ -30,6 +31,8 @@ public class PrintAdapter extends RecyclerView.Adapter<PrintAdapter.PrintViewHol
 
     private List<DoneBean> mList;
 
+    private OnItemClickListenner onItemClickListenner;
+
     public PrintAdapter(Context mContext, List<DoneBean> mList) {
         this.mContext = mContext;
         this.mList = mList;
@@ -42,7 +45,7 @@ public class PrintAdapter extends RecyclerView.Adapter<PrintAdapter.PrintViewHol
 
     @Override
     public void onBindViewHolder(final PrintViewHolder holder, final int position) {
-        DoneBean bean = mList.get(position);
+        final DoneBean bean = mList.get(position);
         holder.foodName.setText(bean.getName());
         holder.tableName.setText(bean.getTableName());
         if (bean.getPrintCount() > 0) {
@@ -51,12 +54,12 @@ public class PrintAdapter extends RecyclerView.Adapter<PrintAdapter.PrintViewHol
         } else {
             holder.remark.setVisibility(View.GONE);
         }
-        if (bean.isSelect()){
+        if (bean.isSelect()) {
             holder.printParent.setBackgroundColor(ContextCompat.getColor(mContext, R.color.breviary_bg));
             holder.view.setBackgroundColor(ContextCompat.getColor(mContext, R.color.breviary_bg));
             holder.foodName.setTextColor(ContextCompat.getColor(mContext, R.color.white));
             holder.tableName.setTextColor(ContextCompat.getColor(mContext, R.color.white));
-        }else {
+        } else {
             holder.printParent.setBackgroundColor(ContextCompat.getColor(mContext, R.color.white));
             holder.view.setBackgroundColor(ContextCompat.getColor(mContext, R.color.line));
             holder.foodName.setTextColor(ContextCompat.getColor(mContext, R.color.print_item_text));
@@ -70,6 +73,7 @@ public class PrintAdapter extends RecyclerView.Adapter<PrintAdapter.PrintViewHol
                 }
                 mList.get(position).setSelect(true);
                 notifyDataSetChanged();
+                onItemClickListenner.onClick(view, holder.getLayoutPosition(), bean);
             }
         });
     }
@@ -82,6 +86,10 @@ public class PrintAdapter extends RecyclerView.Adapter<PrintAdapter.PrintViewHol
     public void notifyDataSetChanged(List<DoneBean> mList) {
         this.mList = mList;
         notifyDataSetChanged();
+    }
+
+    public void setOnItemClickListenner(OnItemClickListenner onItemClickListenner) {
+        this.onItemClickListenner = onItemClickListenner;
     }
 
     static class PrintViewHolder extends RecyclerView.ViewHolder {

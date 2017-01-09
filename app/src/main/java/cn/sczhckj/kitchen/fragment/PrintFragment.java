@@ -22,12 +22,17 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import cn.sczhckj.kitchen.R;
+import cn.sczhckj.kitchen.activity.MainActivity;
 import cn.sczhckj.kitchen.adapter.PrintAdapter;
+import cn.sczhckj.kitchen.animation.AnimationImpl;
 import cn.sczhckj.kitchen.data.bean.Bean;
+import cn.sczhckj.kitchen.data.bean.ResponseCommonBean;
 import cn.sczhckj.kitchen.data.bean.kitchen.DoneBean;
 import cn.sczhckj.kitchen.data.event.SendEvent;
 import cn.sczhckj.kitchen.data.response.ResponseCode;
+import cn.sczhckj.kitchen.listenner.OnItemClickListenner;
 import cn.sczhckj.kitchen.listenner.OnLableClickListenner;
+import cn.sczhckj.kitchen.mode.KitchenImpl;
 import cn.sczhckj.kitchen.mode.KitchenMode;
 import cn.sczhckj.kitchen.overwrite.DashlineItemDivider;
 import retrofit2.Call;
@@ -40,7 +45,7 @@ import retrofit2.Response;
  * @ email: 572919350@qq.com
  */
 
-public class PrintFragment extends BaseFragment implements Callback<Bean<List<DoneBean>>> {
+public class PrintFragment extends BaseFragment implements Callback<Bean<List<DoneBean>>>, OnItemClickListenner {
 
 
     @Bind(R.id.breviary_food_name)
@@ -51,6 +56,9 @@ public class PrintFragment extends BaseFragment implements Callback<Bean<List<Do
     RelativeLayout foodBreviaryParent;
     @Bind(R.id.print_recy)
     RecyclerView printRecyclerView;
+
+    private View view;
+
     /**
      * 获取数据
      */
@@ -64,6 +72,23 @@ public class PrintFragment extends BaseFragment implements Callback<Bean<List<Do
      * 补打记录
      */
     private List<DoneBean> mList = new ArrayList<>();
+    /**
+     * 默认下标
+     */
+    private int index = -1;
+    /**
+     * 当前补打记录
+     */
+    private DoneBean doneBean;
+    /**
+     * 补打数据请求
+     */
+    private KitchenImpl mKitchen;
+
+    /**
+     * 动画
+     */
+    private AnimationImpl animation;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -74,7 +99,7 @@ public class PrintFragment extends BaseFragment implements Callback<Bean<List<Do
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_print, null, false);
+        view = inflater.inflate(R.layout.fragment_print, null, false);
         ButterKnife.bind(this, view);
         return view;
     }
@@ -90,12 +115,15 @@ public class PrintFragment extends BaseFragment implements Callback<Bean<List<Do
      */
     private void init() {
         initAdapter();
+        animation=new AnimationImpl(getContext());
         mKitchenMode = new KitchenMode(getContext());
+        mKitchen = new KitchenImpl(getContext());
         mKitchenMode.done(this);
     }
 
     private void initAdapter() {
         mPrintAdapter = new PrintAdapter(getContext(), null);
+        mPrintAdapter.setOnItemClickListenner(this);
         printRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         printRecyclerView.setAdapter(mPrintAdapter);
     }
@@ -118,8 +146,11 @@ public class PrintFragment extends BaseFragment implements Callback<Bean<List<Do
         if (bean != null && bean.getCode() == ResponseCode.SUCCESS) {
             mList = bean.getResult();
             mPrintAdapter.notifyDataSetChanged(mList);
-            if (mList.size()>0) {
-                EventBus.getDefault().post(new SendEvent(SendEvent.PRINT_LABLE, mList.get(0).getName(),mList.get(0).getTableName()));
+            doneBean = null;
+            if (mList.size() > 0) {
+                doneBean = mList.get(0);
+                index = -1;
+                EventBus.getDefault().post(new SendEvent(SendEvent.PRINT_LABLE, mList.get(0).getName(), mList.get(0).getTableName()));
             }
         } else {
 
@@ -129,6 +160,34 @@ public class PrintFragment extends BaseFragment implements Callback<Bean<List<Do
     @Override
     public void onFailure(Call<Bean<List<DoneBean>>> call, Throwable t) {
 
+    }
+
+    /**
+     * 补打回调
+     */
+    Callback<Bean<ResponseCommonBean>> printCallback = new Callback<Bean<ResponseCommonBean>>() {
+        @Override
+        public void onResponse(Call<Bean<ResponseCommonBean>> call, Response<Bean<ResponseCommonBean>> response) {
+
+        }
+
+        @Override
+        public void onFailure(Call<Bean<ResponseCommonBean>> call, Throwable t) {
+
+        }
+    };
+
+    /**
+     * 设置进入动画效果
+     */
+    public void setAnimationIn() {
+        animation.downIn(view);
+    }
+    /**
+     * 设置退出动画效果
+     */
+    public void setAnimationOut() {
+        animation.downOut(view);
     }
 
     /**
@@ -145,10 +204,69 @@ public class PrintFragment extends BaseFragment implements Callback<Bean<List<Do
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void reviceMessage(SendEvent event) {
-        if (event.getType() == SendEvent.FOOD_LABLE){
+        if (event.getType() == SendEvent.FOOD_LABLE) {
             /**刷新待加工缩略信息*/
-            setFoodTitle(event.getName(),event.getCount());
+            setFoodTitle(event.getName(), event.getCount());
+        } else if (event.getType() == SendEvent.KEY_AFFIRM && !MainActivity.isFoodView) {
+            /**补打*/
+            if (doneBean != null) {
+                mKitchen.print(doneBean, printCallback);
+            }
+        } else if (event.getType() == SendEvent.KEY_NEXT && !MainActivity.isFoodView) {
+            /**下一个*/
+            next();
+        } else if (event.getType() == SendEvent.KEY_PRE && !MainActivity.isFoodView) {
+            /**上一个*/
+            pre();
+        } else if (event.getType() == SendEvent.FOOD_FINISH) {
+            /**出菜成功后，通知刷新补打记录*/
+            mKitchenMode.done(this);
         }
     }
 
+    /**
+     * 下一个
+     */
+    private void next() {
+        int size = mList.size();
+        if (index < (size - 1)) {
+            index++;
+            refreshAdapter(index);
+        }
+    }
+
+    /**
+     * 上一个
+     */
+    private void pre() {
+        if (index > 0) {
+            index--;
+            refreshAdapter(index);
+        }
+    }
+
+    /**
+     * 刷新适配
+     *
+     * @param index
+     */
+    private void refreshAdapter(int index) {
+        for (int i = 0; i < mList.size(); i++) {
+            if (i == index) {
+                mList.get(i).setSelect(true);
+            } else {
+                mList.get(i).setSelect(false);
+            }
+        }
+        mPrintAdapter.notifyDataSetChanged(mList);
+    }
+
+    @Override
+    public void onClick(View v, int postion, Object bean) {
+        index = postion;
+        doneBean = (DoneBean) bean;
+        if (doneBean != null) {
+            mKitchen.print(doneBean, printCallback);
+        }
+    }
 }

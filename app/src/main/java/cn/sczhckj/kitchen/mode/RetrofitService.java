@@ -7,10 +7,13 @@ import cn.sczhckj.kitchen.data.bean.ResponseCommonBean;
 import cn.sczhckj.kitchen.data.bean.device.VersionBean;
 import cn.sczhckj.kitchen.data.bean.kitchen.TodoBean;
 import cn.sczhckj.kitchen.data.bean.kitchen.DoneBean;
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
+import retrofit2.http.GET;
 import retrofit2.http.POST;
+import retrofit2.http.Url;
 
 /**
  * @describe: 接口定义
@@ -55,5 +58,12 @@ public interface RetrofitService {
     @POST("rest/device/update")
     Call<Bean<VersionBean>> version(@Field("p") String p);
 
+    /**
+     * 下载APK
+     * @param url
+     * @return
+     */
+    @GET
+    Call<ResponseBody> download(@Url String url);
 
 }

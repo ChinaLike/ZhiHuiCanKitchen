@@ -20,6 +20,22 @@ public class SendEvent {
      * 小票
      */
     public final static int PRINT_LABLE = 2;
+    /**
+     * 下一个
+     */
+    public final static int KEY_NEXT = 3;
+    /**
+     * 上一个
+     */
+    public final static int KEY_PRE = 4;
+    /**
+     * 确认
+     */
+    public final static int KEY_AFFIRM = 5;
+    /**
+     * 出菜成功
+     */
+    public final static int FOOD_FINISH = 6;
 
     private int type;//类型
 

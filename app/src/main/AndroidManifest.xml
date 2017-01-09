@@ -30,6 +30,12 @@
 
         </service>
 
+        <receiver android:name=".service.MediaButtonReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.MEDIA_BUTTON"></action>
+            </intent-filter>
+        </receiver>
+
     </application>
 
 </manifest>

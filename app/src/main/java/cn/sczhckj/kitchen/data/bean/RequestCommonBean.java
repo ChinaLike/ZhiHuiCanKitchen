@@ -16,6 +16,7 @@ public class RequestCommonBean {
     private Integer recordId;//消费记录ID
     private Integer detailId;//明细记录ID
     private String name;//用户姓名，在后厨端作为菜品名称
+    private Integer type;//类型，用于版本检测0-点菜端 1-后厨端
 
     private DetailBean detail;//后厨单个菜品信息
     private Integer tableId;//台桌ID
@@ -93,6 +94,14 @@ public class RequestCommonBean {
         this.tableName = tableName;
     }
 
+    public Integer getType() {
+        return type;
+    }
+
+    public void setType(Integer type) {
+        this.type = type;
+    }
+
     @Override
     public String toString() {
         return "{" +
@@ -102,6 +111,7 @@ public class RequestCommonBean {
                 ", recordId=" + recordId +
                 ", detailId=" + detailId +
                 ", name='" + name + '\'' +
+                ", type=" + type +
                 ", detail=" + detail +
                 ", tableId=" + tableId +
                 ", tableName='" + tableName + '\'' +

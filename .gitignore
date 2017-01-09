@@ -7,3 +7,11 @@
 /build
 /captures
 .externalNativeBuild
+vcs.xml
+copyright
+compiler.xml
+encodings.xml
+gradle.xml
+misc.xml
+modules.xml
+runConfigurations.xml
