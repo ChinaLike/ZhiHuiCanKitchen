@@ -1,6 +1,14 @@
 apply plugin: 'com.android.application'
 
 android {
+    signingConfigs {
+        release {
+            keyAlias 'zhihuican'
+            keyPassword 'zhc888888'
+            storeFile file('E:/Work/ZhiHuiCanKitchen/keystore.jks')
+            storePassword 'zhc888888'
+        }
+    }
     compileSdkVersion 24
     buildToolsVersion "25.0.1"
     defaultConfig {
@@ -13,7 +21,14 @@ android {
     }
     buildTypes {
         release {
+            minifyEnabled true
+            shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
+        }
+        debug {
             minifyEnabled false
+            shrinkResources false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
