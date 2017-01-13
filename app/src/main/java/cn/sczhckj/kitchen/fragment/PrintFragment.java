@@ -35,6 +35,7 @@ import cn.sczhckj.kitchen.listenner.OnLableClickListenner;
 import cn.sczhckj.kitchen.mode.KitchenImpl;
 import cn.sczhckj.kitchen.mode.KitchenMode;
 import cn.sczhckj.kitchen.overwrite.DashlineItemDivider;
+import cn.sczhckj.kitchen.until.show.T;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -115,7 +116,7 @@ public class PrintFragment extends BaseFragment implements Callback<Bean<List<Do
      */
     private void init() {
         initAdapter();
-        animation=new AnimationImpl(getContext());
+        animation = new AnimationImpl(getContext());
         mKitchenMode = new KitchenMode(getContext());
         mKitchen = new KitchenImpl(getContext());
         mKitchenMode.done(this);
@@ -168,12 +169,17 @@ public class PrintFragment extends BaseFragment implements Callback<Bean<List<Do
     Callback<Bean<ResponseCommonBean>> printCallback = new Callback<Bean<ResponseCommonBean>>() {
         @Override
         public void onResponse(Call<Bean<ResponseCommonBean>> call, Response<Bean<ResponseCommonBean>> response) {
-
+            Bean<ResponseCommonBean> bean = response.body();
+            if (bean != null && bean.getCode() == ResponseCode.SUCCESS){
+                T.showShort(getContext(),bean.getMessage());
+            }else {
+                T.showShort(getContext(),"补打失败");
+            }
         }
 
         @Override
         public void onFailure(Call<Bean<ResponseCommonBean>> call, Throwable t) {
-
+            T.showShort(getContext(),"补打失败");
         }
     };
 
@@ -183,6 +189,7 @@ public class PrintFragment extends BaseFragment implements Callback<Bean<List<Do
     public void setAnimationIn() {
         animation.downIn(view);
     }
+
     /**
      * 设置退出动画效果
      */
@@ -197,9 +204,14 @@ public class PrintFragment extends BaseFragment implements Callback<Bean<List<Do
      * @param count 数量
      */
     public void setFoodTitle(String name, int count) {
-        breviaryFoodConut.setVisibility(View.VISIBLE);
-        breviaryFoodName.setText(name);
-        breviaryFoodConut.setText(count + "份");
+        if (count>0) {
+            breviaryFoodConut.setVisibility(View.VISIBLE);
+            breviaryFoodName.setText(name);
+            breviaryFoodConut.setText(count + "份");
+        }else {
+            breviaryFoodConut.setVisibility(View.GONE);
+            breviaryFoodName.setText(name);
+        }
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -208,7 +220,7 @@ public class PrintFragment extends BaseFragment implements Callback<Bean<List<Do
             /**刷新待加工缩略信息*/
             setFoodTitle(event.getName(), event.getCount());
         } else if (event.getType() == SendEvent.KEY_AFFIRM && !MainActivity.isFoodView) {
-            /**补打*/
+            /**按键补打*/
             if (doneBean != null) {
                 mKitchen.print(doneBean, printCallback);
             }

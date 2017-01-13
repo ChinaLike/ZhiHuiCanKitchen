@@ -29,4 +29,14 @@ public interface OP {
      */
     String DEVICE_UPDATE = "update";
 
+    /**
+     * 刷新后厨
+     */
+    String PUSH_REFRESH = "refresh";
+
+    /**
+     * APP推送 心跳
+     */
+    String PUSH_HEART = "heart";
+
 }

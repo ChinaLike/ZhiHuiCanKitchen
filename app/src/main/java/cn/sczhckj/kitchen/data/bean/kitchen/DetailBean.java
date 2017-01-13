@@ -12,6 +12,7 @@ public class DetailBean {
     private String tableName;//桌号
     private Integer recordId;//消费记录ID
     private Integer detailId;//明细记录ID
+    private Integer taskSubId;//子任务ID
 
     public Integer getTableId() {
         return tableId;
@@ -45,6 +46,14 @@ public class DetailBean {
         this.detailId = detailId;
     }
 
+    public Integer getTaskSubId() {
+        return taskSubId;
+    }
+
+    public void setTaskSubId(Integer taskSubId) {
+        this.taskSubId = taskSubId;
+    }
+
     @Override
     public String toString() {
         return "{" +
@@ -52,6 +61,7 @@ public class DetailBean {
                 ", tableName='" + tableName + '\'' +
                 ", recordId=" + recordId +
                 ", detailId=" + detailId +
+                ", taskSubId=" + taskSubId +
                 '}';
     }
 }

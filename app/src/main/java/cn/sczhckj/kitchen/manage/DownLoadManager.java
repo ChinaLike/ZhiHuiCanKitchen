@@ -47,7 +47,7 @@ public class DownLoadManager {
             @Override
             protected void onProgress(long bytesRead, long contentLength, boolean done) {
                 if (done) {
-                    File file = new File(Environment.getExternalStorageDirectory() + "/Download/", apkName);
+                    File file = new File(Environment.getExternalStorageDirectory() + "/ZHCDownload/", apkName);
                     autoInstall(mContext, file);
                 }
             }
@@ -59,7 +59,7 @@ public class DownLoadManager {
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                 try {
                     InputStream is = response.body().byteStream();
-                    File file = new File(Environment.getExternalStorageDirectory() + "/Download/", apkName);
+                    File file = new File(Environment.getExternalStorageDirectory() + "/ZHCDownload/", apkName);
                     FileOutputStream fos = new FileOutputStream(file);
                     BufferedInputStream bis = new BufferedInputStream(is);
                     byte[] buffer = new byte[1024];

@@ -7,15 +7,18 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import org.greenrobot.eventbus.EventBus;
+
 import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import cn.sczhckj.kitchen.R;
 import cn.sczhckj.kitchen.data.bean.kitchen.DetailBean;
+import cn.sczhckj.kitchen.data.event.SendEvent;
 
 /**
- * @ describe:
+ * @ describe: 台桌列表
  * @ author: Like on 2017/1/6.
  * @ email: 572919350@qq.com
  */
@@ -37,9 +40,16 @@ public class TableAdapter extends RecyclerView.Adapter<TableAdapter.TableViewHol
     }
 
     @Override
-    public void onBindViewHolder(TableViewHolder holder, int position) {
+    public void onBindViewHolder(TableViewHolder holder, final int position) {
         DetailBean bean = mList.get(position);
         holder.tableName.setText(bean.getTableName());
+        holder.tableName.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                /**手动点击菜品进行出菜*/
+                EventBus.getDefault().post(new SendEvent(SendEvent.NON_AUTO_FOOD_FINISH, position, true));
+            }
+        });
     }
 
     public void notifyDataSetChanged(List<DetailBean> mList) {

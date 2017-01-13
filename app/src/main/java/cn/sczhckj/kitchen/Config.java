@@ -6,9 +6,25 @@ package cn.sczhckj.kitchen;
  * @ email: 572919350@qq.com
  */
 
-public class Config {
+public interface Config {
+
+    /**
+     * IP地址
+     */
+    String IP = "192.168.0.50";
+
     /**
      * 主机
      */
-    public static String HOST = "http://192.168.0.50:8080/pad/";
+    String HOST = "http://" + IP + ":8080/pad/";
+    /**
+     * 后厨推送
+     */
+    String URL_KITCHEN_SERVICE = "ws://" + IP + ":8080/pad/ws/kitchen?username=";
+
+    /**
+     * 心跳检测
+     */
+    String URL_HEART_SERVICE = "ws://" + IP + ":8080/pad/ws/heart?username=";
+
 }

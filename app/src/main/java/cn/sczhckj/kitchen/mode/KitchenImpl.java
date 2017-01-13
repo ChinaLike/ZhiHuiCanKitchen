@@ -9,6 +9,7 @@ import cn.sczhckj.kitchen.data.bean.device.VersionBean;
 import cn.sczhckj.kitchen.data.bean.kitchen.DoneBean;
 import cn.sczhckj.kitchen.data.bean.kitchen.TodoBean;
 import cn.sczhckj.kitchen.data.response.ResponseCode;
+import cn.sczhckj.kitchen.listenner.OnVersionCheckListenner;
 import cn.sczhckj.kitchen.manage.DownLoadManager;
 import cn.sczhckj.kitchen.until.AppSystemUntil;
 import retrofit2.Call;
@@ -45,10 +46,11 @@ public class KitchenImpl {
      */
     public void foodFinish(TodoBean todoBean, int index, Callback<Bean<ResponseCommonBean>> callback) {
         RequestCommonBean bean = new RequestCommonBean();
-        bean.setDeviceId(AppSystemUntil.getAndroidID(mContext));
-        bean.setFoodId(todoBean.getFoodId());
-        bean.setCateId(todoBean.getCateId());
-        bean.setDetail(todoBean.getDetails().get(index));
+//        bean.setDeviceId(AppSystemUntil.getAndroidID(mContext));
+//        bean.setFoodId(todoBean.getFoodId());
+//        bean.setCateId(todoBean.getCateId());
+//        bean.setDetail(todoBean.getDetails().get(index));
+        bean.setTaskSubId(todoBean.getDetails().get(index).getTaskSubId());
         mKitchenMode.finish(bean, callback);
     }
 
@@ -74,7 +76,7 @@ public class KitchenImpl {
     /**
      * 检查版本
      */
-    public void checkVersion() {
+    public void checkVersion(final OnVersionCheckListenner onVersionCheckListenner) {
         RequestCommonBean bean = new RequestCommonBean();
         bean.setDeviceId(AppSystemUntil.getAndroidID(mContext));
         bean.setType(VERSION_TYPE);
@@ -84,14 +86,21 @@ public class KitchenImpl {
                 Bean<VersionBean> bean = response.body();
                 if (bean != null && bean.getCode() == ResponseCode.SUCCESS
                         && bean.getCode() > AppSystemUntil.getVersionCode(mContext)) {
+                    onVersionCheckListenner.onSuccess(",在后台将更新安装包！");
                     DownLoadManager manager = new DownLoadManager();
-                    manager.retrofitDownload(bean.getResult().getUrl(), bean.getResult().getName(), mContext);
+                    if (bean.getResult().getName().startsWith(".apk")) {
+                        manager.retrofitDownload(bean.getResult().getUrl(), bean.getResult().getName(), mContext);
+                    } else {
+                        manager.retrofitDownload(bean.getResult().getUrl(), bean.getResult().getName() + ".apk", mContext);
+                    }
+                } else {
+                    onVersionCheckListenner.onSuccess("");
                 }
             }
 
             @Override
             public void onFailure(Call<Bean<VersionBean>> call, Throwable t) {
-
+                onVersionCheckListenner.onFail();
             }
         });
     }

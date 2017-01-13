@@ -6,7 +6,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.util.List;
 
@@ -14,6 +17,7 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import cn.sczhckj.kitchen.R;
 import cn.sczhckj.kitchen.data.bean.kitchen.TodoBean;
+import cn.sczhckj.kitchen.data.event.SendEvent;
 
 /**
  * @ describe:  代加工菜品列表
@@ -39,8 +43,8 @@ public class TodoAdapter extends RecyclerView.Adapter<TodoAdapter.TodoViewHolder
 
     @Override
     public void onBindViewHolder(TodoViewHolder holder, int position) {
-        TodoBean bean = mList.get(position);
-        holder.foodIndex.setText("" + disposeIndex(position+2));
+        final TodoBean bean = mList.get(position);
+        holder.foodIndex.setText("" + disposeIndex(position + 2));
         if (position == 0) {
             holder.foodIndexParent.setBackgroundResource(R.drawable.shape_dark_green);
         } else if (position == 1) {
@@ -49,7 +53,15 @@ public class TodoAdapter extends RecyclerView.Adapter<TodoAdapter.TodoViewHolder
             holder.foodIndexParent.setBackgroundResource(R.drawable.shape_gray);
         }
         holder.foodName.setText(bean.getName());
-        holder.foodCount.setText(bean.getCount()+"");
+        holder.foodCount.setText(bean.getCount() + "");
+
+        holder.parent.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                /**手动点击菜品进行出菜*/
+                EventBus.getDefault().post(new SendEvent(SendEvent.NON_AUTO_FOOD_FINISH, bean, false));
+            }
+        });
 
     }
 
@@ -66,6 +78,7 @@ public class TodoAdapter extends RecyclerView.Adapter<TodoAdapter.TodoViewHolder
 
     /**
      * 处理下标
+     *
      * @param postion
      * @return
      */
@@ -83,6 +96,8 @@ public class TodoAdapter extends RecyclerView.Adapter<TodoAdapter.TodoViewHolder
         TextView foodIndex;
         @Bind(R.id.food_index_parent)
         FrameLayout foodIndexParent;
+        @Bind(R.id.item_parent)
+        RelativeLayout parent;
         @Bind(R.id.food_name)
         TextView foodName;
         @Bind(R.id.food_count)

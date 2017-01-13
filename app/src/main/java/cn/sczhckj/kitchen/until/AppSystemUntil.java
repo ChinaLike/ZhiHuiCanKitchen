@@ -3,6 +3,9 @@ package cn.sczhckj.kitchen.until;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.wifi.WifiInfo;
+import android.net.wifi.WifiManager;
+import android.provider.Settings;
 import android.view.WindowManager;
 
 /**
@@ -35,12 +38,12 @@ public class AppSystemUntil {
      * @return
      */
     public static String getAndroidID(Context mContext) {
-//        return Settings.System.getString(mContext.getContentResolver(), Settings.System.ANDROID_ID);
-        return "1234567890";
+        return Settings.System.getString(mContext.getContentResolver(), Settings.System.ANDROID_ID);
     }
 
     /**
      * 屏幕的宽度
+     *
      * @param mContext
      * @return
      */
@@ -51,6 +54,7 @@ public class AppSystemUntil {
 
     /**
      * 屏幕的高度
+     *
      * @param mContext
      * @return
      */
@@ -70,5 +74,36 @@ public class AppSystemUntil {
             e.printStackTrace();
         }
         return verCode;
+    }
+
+    /**
+     * 获取IP
+     *
+     * @param mContext
+     * @return
+     */
+    public static String ip(Context mContext) {
+        NetworkInfo info = ((ConnectivityManager) mContext
+                .getSystemService(Context.CONNECTIVITY_SERVICE)).getActiveNetworkInfo();
+        if (info != null && info.isConnected() && info.getType() == ConnectivityManager.TYPE_WIFI) {
+            WifiManager wifiManager = (WifiManager) mContext.getSystemService(Context.WIFI_SERVICE);
+            WifiInfo wifiInfo = wifiManager.getConnectionInfo();
+            String ipAddress = intIP2StringIP(wifiInfo.getIpAddress());//得到IPV4地址
+            return ipAddress;
+        }
+        return null;
+    }
+
+    /**
+     * 将得到的int类型的IP转换为String类型
+     *
+     * @param ip
+     * @return
+     */
+    public static String intIP2StringIP(int ip) {
+        return (ip & 0xFF) + "." +
+                ((ip >> 8) & 0xFF) + "." +
+                ((ip >> 16) & 0xFF) + "." +
+                (ip >> 24 & 0xFF);
     }
 }

@@ -7,20 +7,34 @@ import android.media.AudioManager;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
+import android.view.KeyEvent;
 import android.widget.FrameLayout;
+
+import org.greenrobot.eventbus.EventBus;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import cn.sczhckj.kitchen.Config;
 import cn.sczhckj.kitchen.R;
 import cn.sczhckj.kitchen.animation.AnimationImpl;
+import cn.sczhckj.kitchen.data.bean.PushCommonBean;
+import cn.sczhckj.kitchen.data.constant.OP;
+import cn.sczhckj.kitchen.data.event.SendEvent;
 import cn.sczhckj.kitchen.fragment.FoodFragment;
 import cn.sczhckj.kitchen.fragment.PrintFragment;
 import cn.sczhckj.kitchen.listenner.OnLableClickListenner;
 import cn.sczhckj.kitchen.mode.KitchenImpl;
 import cn.sczhckj.kitchen.service.MediaButtonReceiver;
 import cn.sczhckj.kitchen.service.PollService;
+import cn.sczhckj.kitchen.until.AppSystemUntil;
+import cn.sczhckj.kitchen.until.show.L;
+import cn.sczhckj.kitchen.websocket.WebSocket;
+import cn.sczhckj.kitchen.websocket.WebSocketConnection;
+import cn.sczhckj.kitchen.websocket.WebSocketException;
+import cn.sczhckj.platform.rest.io.RestRequest;
+import cn.sczhckj.platform.rest.io.json.JSONRestRequest;
 
-public class MainActivity extends AppCompatActivity implements OnLableClickListenner {
+public class MainActivity extends AppCompatActivity implements OnLableClickListenner, WebSocket.ConnectionHandler {
 
     @Bind(R.id.activity_main_parent)
     FrameLayout activityMainParent;
@@ -38,11 +52,6 @@ public class MainActivity extends AppCompatActivity implements OnLableClickListe
      */
     private Intent intent;
     /**
-     * 版本更新
-     */
-    private KitchenImpl mKitchen;
-
-    /**
      * 获得AudioManager对象
      */
     private AudioManager manager;
@@ -55,6 +64,10 @@ public class MainActivity extends AppCompatActivity implements OnLableClickListe
      * 是否处于待加工菜品界面
      */
     public static boolean isFoodView = true;
+    /**
+     * WebSocket连接
+     */
+    private WebSocketConnection connection;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,9 +86,19 @@ public class MainActivity extends AppCompatActivity implements OnLableClickListe
         initPrintFragment();
         initFoodFragment();
         initService();
-        mKitchen = new KitchenImpl(this);
-        /**检查版本，有更新在后台自动更新*/
-        mKitchen.checkVersion();
+        initWebSocket();
+    }
+
+    /**
+     * 初始化WebSocket
+     */
+    private void initWebSocket() {
+        try {
+            connection = new WebSocketConnection();
+            connection.connect(Config.URL_KITCHEN_SERVICE + AppSystemUntil.getAndroidID(this), this);
+        } catch (WebSocketException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -168,5 +191,46 @@ public class MainActivity extends AppCompatActivity implements OnLableClickListe
     protected void onDestroy() {
         super.onDestroy();
         manager.unregisterMediaButtonEventReceiver(mComponentName);
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            //监控/拦截/屏蔽返回键
+            return false;
+        }
+        return super.onKeyDown(keyCode, event);
+    }
+
+    @Override
+    public void onOpen() {
+        if (!connection.isConnected()) {
+            connection.reconnect();
+        }
+    }
+
+    @Override
+    public void onClose(int code, String reason) {
+
+    }
+
+    @Override
+    public void onTextMessage(String payload) {
+        RestRequest<PushCommonBean> restRequest
+                = JSONRestRequest.Parser.parse(payload, PushCommonBean.class);
+        if (OP.PUSH_REFRESH.equals(restRequest.getOp())) {
+            /**刷新菜品*/
+            EventBus.getDefault().post(new SendEvent(SendEvent.FOOD_REFRESH));
+        }
+    }
+
+    @Override
+    public void onRawTextMessage(byte[] payload) {
+
+    }
+
+    @Override
+    public void onBinaryMessage(byte[] payload) {
+
     }
 }

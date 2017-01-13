@@ -42,6 +42,7 @@ import cn.sczhckj.kitchen.mode.KitchenMode;
 import cn.sczhckj.kitchen.mode.RetrofitRequest;
 import cn.sczhckj.kitchen.overwrite.DashlineItemDivider;
 import cn.sczhckj.kitchen.until.AppSystemUntil;
+import cn.sczhckj.kitchen.until.show.L;
 import cn.sczhckj.kitchen.until.show.T;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -132,7 +133,7 @@ public class FoodFragment extends BaseFragment implements Callback<Bean<List<Tod
      * 初始化
      */
     private void init() {
-        animation=new AnimationImpl(getContext());
+        animation = new AnimationImpl(getContext());
         mKitchenMode = new KitchenMode(getContext());
         mKitchen = new KitchenImpl(getContext());
         initTodoAdapter();
@@ -178,6 +179,10 @@ public class FoodFragment extends BaseFragment implements Callback<Bean<List<Tod
             disposeHeader(headBean);
             mList.remove(0);
             EventBus.getDefault().post(new SendEvent(SendEvent.FOOD_LABLE, headBean.getName(), headBean.getDetails().size()));
+        }else {
+            foodName.setText("暂无菜品");
+            mTableAdapter.notifyDataSetChanged(null);
+            EventBus.getDefault().post(new SendEvent(SendEvent.FOOD_LABLE, "暂无菜品", 0));
         }
         return mList;
     }
@@ -229,6 +234,7 @@ public class FoodFragment extends BaseFragment implements Callback<Bean<List<Tod
         public void onResponse(Call<Bean<ResponseCommonBean>> call, Response<Bean<ResponseCommonBean>> response) {
             Bean<ResponseCommonBean> bean = response.body();
             if (bean != null && bean.getCode() == ResponseCode.SUCCESS) {
+                T.showShort(getContext(), "出菜成功");
                 /**出菜成功刷新菜品*/
                 initTodo();
                 EventBus.getDefault().post(new SendEvent(SendEvent.FOOD_FINISH));
@@ -261,6 +267,7 @@ public class FoodFragment extends BaseFragment implements Callback<Bean<List<Tod
     public void setAnimationIn() {
         animation.upIn(view);
     }
+
     /**
      * 设置退出动画效果
      */
@@ -283,6 +290,15 @@ public class FoodFragment extends BaseFragment implements Callback<Bean<List<Tod
             /**下一个*/
         } else if (event.getType() == SendEvent.KEY_PRE && MainActivity.isFoodView) {
             /**上一个*/
+        } else if (event.getType() == SendEvent.NON_AUTO_FOOD_FINISH) {
+            /**手动点击菜品完成*/
+            if (event.isHeader()) {
+                /**头部数据*/
+                mKitchen.foodFinish(headBean, event.getPostion(), finishCallback);
+            } else {
+                /**非头部数据*/
+                mKitchen.foodFinish(event.getBean(), 0, finishCallback);
+            }
         }
     }
 
