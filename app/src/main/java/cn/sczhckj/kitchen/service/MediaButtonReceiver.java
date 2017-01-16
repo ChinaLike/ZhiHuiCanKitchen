@@ -16,6 +16,7 @@ import cn.sczhckj.kitchen.until.show.L;
 public class MediaButtonReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
+        L.d("测试001");
         /**获取Action*/
         String intentAction = intent.getAction();
         /**获取KeyEvent对象*/
