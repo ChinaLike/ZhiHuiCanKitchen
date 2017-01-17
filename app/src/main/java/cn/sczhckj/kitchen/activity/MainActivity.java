@@ -195,6 +195,7 @@ public class MainActivity extends AppCompatActivity implements OnLableClickListe
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
+        L.d("测试onKeyDown="+keyCode);
         if (keyCode == KeyEvent.KEYCODE_BACK) {
             //监控/拦截/屏蔽返回键
             return false;
@@ -232,5 +233,22 @@ public class MainActivity extends AppCompatActivity implements OnLableClickListe
     @Override
     public void onBinaryMessage(byte[] payload) {
 
+    }
+
+    @Override
+    public boolean onKeyUp(int keyCode, KeyEvent event) {
+        L.d("测试onKeyUp="+keyCode);
+        switch (keyCode){
+            case KeyEvent.KEYCODE_MEDIA_PREVIOUS:
+                L.d("测试7");
+                break;
+            case KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE:
+                L.d("测试8");
+                break;
+            case KeyEvent.KEYCODE_HEADSETHOOK:
+                L.d("测试9");
+                break;
+        }
+        return super.onKeyUp(keyCode, event);
     }
 }

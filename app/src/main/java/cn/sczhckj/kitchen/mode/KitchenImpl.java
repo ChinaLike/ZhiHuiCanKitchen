@@ -70,6 +70,7 @@ public class KitchenImpl {
         bean.setName(doneBean.getName());
         bean.setTableId(doneBean.getTableId());
         bean.setTableName(doneBean.getTableName());
+        bean.setTaskSubId(doneBean.getTaskSubId());
         mKitchenMode.print(bean, callback);
     }
 

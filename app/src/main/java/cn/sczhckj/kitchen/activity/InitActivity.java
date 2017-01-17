@@ -12,6 +12,7 @@ import butterknife.OnClick;
 import cn.sczhckj.kitchen.R;
 import cn.sczhckj.kitchen.listenner.OnVersionCheckListenner;
 import cn.sczhckj.kitchen.mode.KitchenImpl;
+import cn.sczhckj.kitchen.service.HeartService;
 import cn.sczhckj.kitchen.until.AppSystemUntil;
 
 public class InitActivity extends AppCompatActivity implements OnVersionCheckListenner {
@@ -36,6 +37,8 @@ public class InitActivity extends AppCompatActivity implements OnVersionCheckLis
         /**设置设备Id*/
         deviceId.setText("设备ID:" + AppSystemUntil.getAndroidID(this));
         init();
+
+        startService();
     }
 
     /**
@@ -46,6 +49,14 @@ public class InitActivity extends AppCompatActivity implements OnVersionCheckLis
         activityInit.setClickable(false);
         mKitchen = new KitchenImpl(InitActivity.this);
         mKitchen.checkVersion(this);
+    }
+
+    /**
+     * 开启心跳检测
+     */
+    private void startService(){
+        Intent intent = new Intent(InitActivity.this, HeartService.class);
+        startService(intent);
     }
 
     @OnClick(R.id.activity_init)

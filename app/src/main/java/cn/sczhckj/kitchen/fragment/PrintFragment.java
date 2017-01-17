@@ -35,6 +35,7 @@ import cn.sczhckj.kitchen.listenner.OnLableClickListenner;
 import cn.sczhckj.kitchen.mode.KitchenImpl;
 import cn.sczhckj.kitchen.mode.KitchenMode;
 import cn.sczhckj.kitchen.overwrite.DashlineItemDivider;
+import cn.sczhckj.kitchen.until.show.L;
 import cn.sczhckj.kitchen.until.show.T;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -119,9 +120,22 @@ public class PrintFragment extends BaseFragment implements Callback<Bean<List<Do
         animation = new AnimationImpl(getContext());
         mKitchenMode = new KitchenMode(getContext());
         mKitchen = new KitchenImpl(getContext());
+        done();
+    }
+
+    /**
+     * 刷新补打记录
+     */
+    private void done() {
+        if (mKitchenMode == null) {
+            mKitchen = new KitchenImpl(getContext());
+        }
         mKitchenMode.done(this);
     }
 
+    /**
+     * 初始化适配器
+     */
     private void initAdapter() {
         mPrintAdapter = new PrintAdapter(getContext(), null);
         mPrintAdapter.setOnItemClickListenner(this);
@@ -170,16 +184,17 @@ public class PrintFragment extends BaseFragment implements Callback<Bean<List<Do
         @Override
         public void onResponse(Call<Bean<ResponseCommonBean>> call, Response<Bean<ResponseCommonBean>> response) {
             Bean<ResponseCommonBean> bean = response.body();
-            if (bean != null && bean.getCode() == ResponseCode.SUCCESS){
-                T.showShort(getContext(),bean.getMessage());
-            }else {
-                T.showShort(getContext(),"补打失败");
+            if (bean != null && bean.getCode() == ResponseCode.SUCCESS) {
+                T.showShort(getContext(), bean.getMessage());
+                done();
+            } else {
+                T.showShort(getContext(), "补打失败");
             }
         }
 
         @Override
         public void onFailure(Call<Bean<ResponseCommonBean>> call, Throwable t) {
-            T.showShort(getContext(),"补打失败");
+            T.showShort(getContext(), "补打失败");
         }
     };
 
@@ -204,11 +219,11 @@ public class PrintFragment extends BaseFragment implements Callback<Bean<List<Do
      * @param count 数量
      */
     public void setFoodTitle(String name, int count) {
-        if (count>0) {
+        if (count > 0) {
             breviaryFoodConut.setVisibility(View.VISIBLE);
             breviaryFoodName.setText(name);
             breviaryFoodConut.setText(count + "份");
-        }else {
+        } else {
             breviaryFoodConut.setVisibility(View.GONE);
             breviaryFoodName.setText(name);
         }

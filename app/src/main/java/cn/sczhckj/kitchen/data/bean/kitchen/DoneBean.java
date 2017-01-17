@@ -17,6 +17,7 @@ public class DoneBean {
     private String lastPrint;//最后打印时间
     private Integer recordId;//消费记录ID
     private Integer detailId;//明细记录ID
+    private Integer taskSubId;//任务子Id
 
     private boolean isSelect;//本地字段，Item是否选中
 
@@ -100,6 +101,14 @@ public class DoneBean {
         isSelect = select;
     }
 
+    public Integer getTaskSubId() {
+        return taskSubId;
+    }
+
+    public void setTaskSubId(Integer taskSubId) {
+        this.taskSubId = taskSubId;
+    }
+
     @Override
     public String toString() {
         return "{" +
@@ -112,6 +121,8 @@ public class DoneBean {
                 ", lastPrint='" + lastPrint + '\'' +
                 ", recordId=" + recordId +
                 ", detailId=" + detailId +
+                ", taskSubId=" + taskSubId +
+                ", isSelect=" + isSelect +
                 '}';
     }
 }

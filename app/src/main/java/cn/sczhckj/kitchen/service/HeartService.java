@@ -12,9 +12,11 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import cn.sczhckj.kitchen.Config;
+import cn.sczhckj.kitchen.data.bean.PushCommonBean;
 import cn.sczhckj.kitchen.data.bean.kitchen.HeartBean;
 import cn.sczhckj.kitchen.data.constant.OP;
 import cn.sczhckj.kitchen.until.AppSystemUntil;
+import cn.sczhckj.kitchen.until.show.L;
 import cn.sczhckj.kitchen.websocket.WebSocket;
 import cn.sczhckj.kitchen.websocket.WebSocketConnection;
 import cn.sczhckj.kitchen.websocket.WebSocketException;
@@ -28,8 +30,14 @@ import cn.sczhckj.platform.rest.io.json.JSONRestRequest;
  */
 
 public class HeartService extends Service implements WebSocket.ConnectionHandler {
-
-    private final int TIME = 60 * 1000;
+    /**
+     * 心跳发送数据时间
+     */
+    private final int TIME = 30 * 1000;
+    /**
+     * 重新连接时间
+     */
+    private final int RECONNECT_TIME = 30 * 1000;
 
     private WebSocketConnection mWebSocket = new WebSocketConnection();
 
@@ -46,6 +54,14 @@ public class HeartService extends Service implements WebSocket.ConnectionHandler
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        connect();
+        return super.onStartCommand(intent, flags, startId);
+    }
+
+    /**
+     * 连接
+     */
+    private void connect() {
         try {
             mWebSocket.connect(Config.URL_HEART_SERVICE + AppSystemUntil.getAndroidID(getApplicationContext()), this);
             sendMessage(mWebSocket);
@@ -53,7 +69,6 @@ public class HeartService extends Service implements WebSocket.ConnectionHandler
             e.printStackTrace();
         }
 
-        return super.onStartCommand(intent, flags, startId);
     }
 
     @Override
@@ -73,6 +88,19 @@ public class HeartService extends Service implements WebSocket.ConnectionHandler
                 mWebSocket.sendTextMessage(msg);
             }
         }, 100, TIME);
+    }
+
+    /**
+     * 重新连接
+     */
+    private void reConnect() {
+        Timer timer = new Timer();
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                mWebSocket.reconnect();
+            }
+        }, 0, RECONNECT_TIME);
     }
 
     /**
@@ -99,7 +127,10 @@ public class HeartService extends Service implements WebSocket.ConnectionHandler
 
     @Override
     public void onClose(int code, String reason) {
-
+        if (WebSocket.ConnectionHandler.CLOSE_CANNOT_CONNECT !=code) {
+            L.d("WebSocket code = " + code + ",reason=" + reason);
+            reConnect();
+        }
     }
 
     @Override
@@ -112,6 +143,13 @@ public class HeartService extends Service implements WebSocket.ConnectionHandler
 
     @Override
     public void onTextMessage(String payload) {
+        RestRequest<PushCommonBean> rest = JSONRestRequest.Parser.parse(payload, PushCommonBean.class);
+        String op = rest.getOp();
+        switch (op) {
+            case OP.PUSH_HEART:
+                L.d("心跳检测返回数据");
+                break;
+        }
     }
 
 }
