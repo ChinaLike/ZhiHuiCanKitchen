@@ -18,7 +18,9 @@ public class VersionBean {
 
     private String url;//版本更新下载地址
 
-    private Integer type;//类型
+    private String type;//类型
+
+    private String version;
 
     public Integer getCode() {
         return code;
@@ -60,12 +62,20 @@ public class VersionBean {
         this.url = url;
     }
 
-    public Integer getType() {
+    public String getType() {
         return type;
     }
 
-    public void setType(Integer type) {
+    public void setType(String type) {
         this.type = type;
+    }
+
+    public String getVersion() {
+        return version;
+    }
+
+    public void setVersion(String version) {
+        this.version = version;
     }
 
     @Override
@@ -76,7 +86,8 @@ public class VersionBean {
                 ", size='" + size + '\'' +
                 ", content='" + content + '\'' +
                 ", url='" + url + '\'' +
-                ", type=" + type +
+                ", type='" + type + '\'' +
+                ", version='" + version + '\'' +
                 '}';
     }
 }

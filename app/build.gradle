@@ -36,7 +36,8 @@ android {
     android.applicationVariants.all {
         variant ->
             variant.outputs.each {
-                output -> output.outputFile = new File(output.outputFile.parent, "ZhiHuiCanKitchen"+defaultConfig.versionName+".apk")
+//                output -> output.outputFile = new File(output.outputFile.parent, "ZhiHuiCanKitchen"+defaultConfig.versionName+".apk")
+                output -> output.outputFile = new File(output.outputFile.parent, "ZhiHuiCanKitchen"+".apk")
             }
     }
 }

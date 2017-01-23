@@ -1,6 +1,7 @@
 package cn.sczhckj.kitchen.until;
 
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.wifi.WifiInfo;
@@ -74,6 +75,23 @@ public class AppSystemUntil {
             e.printStackTrace();
         }
         return verCode;
+    }
+
+
+    /**
+     * 获取版本名称
+     *
+     * @param mContext
+     * @return
+     */
+    public static String getVersionName(Context mContext) {
+        String versionName = null;
+        try {
+            versionName = mContext.getPackageManager().getPackageInfo(mContext.getPackageName(), 0).versionName;
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
+        return versionName;
     }
 
     /**

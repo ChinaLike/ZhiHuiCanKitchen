@@ -8,10 +8,12 @@ import cn.sczhckj.kitchen.data.bean.ResponseCommonBean;
 import cn.sczhckj.kitchen.data.bean.device.VersionBean;
 import cn.sczhckj.kitchen.data.bean.kitchen.DoneBean;
 import cn.sczhckj.kitchen.data.bean.kitchen.TodoBean;
+import cn.sczhckj.kitchen.data.constant.FileConstant;
 import cn.sczhckj.kitchen.data.response.ResponseCode;
 import cn.sczhckj.kitchen.listenner.OnVersionCheckListenner;
 import cn.sczhckj.kitchen.manage.DownLoadManager;
 import cn.sczhckj.kitchen.until.AppSystemUntil;
+import cn.sczhckj.kitchen.until.show.L;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -31,6 +33,10 @@ public class KitchenImpl {
      * 版本类型0-点菜端 1-后厨端
      */
     private final int VERSION_TYPE = 1;
+    /**
+     * 版本更新内容
+     */
+    private VersionBean mVersionBean;
 
     public KitchenImpl(Context mContext) {
         this.mContext = mContext;
@@ -86,16 +92,11 @@ public class KitchenImpl {
             public void onResponse(Call<Bean<VersionBean>> call, Response<Bean<VersionBean>> response) {
                 Bean<VersionBean> bean = response.body();
                 if (bean != null && bean.getCode() == ResponseCode.SUCCESS
-                        && bean.getCode() > AppSystemUntil.getVersionCode(mContext)) {
-                    onVersionCheckListenner.onSuccess(",在后台将更新安装包！");
-                    DownLoadManager manager = new DownLoadManager();
-                    if (bean.getResult().getName().startsWith(".apk")) {
-                        manager.retrofitDownload(bean.getResult().getUrl(), bean.getResult().getName(), mContext);
-                    } else {
-                        manager.retrofitDownload(bean.getResult().getUrl(), bean.getResult().getName() + ".apk", mContext);
-                    }
+                        && bean.getResult().getCode() > AppSystemUntil.getVersionCode(mContext)) {
+                    mVersionBean = bean.getResult();
+                    onVersionCheckListenner.onSuccess("初始化成功，系统有更新...", onVersionCheckListenner.INIT_UPDATA);
                 } else {
-                    onVersionCheckListenner.onSuccess("");
+                    onVersionCheckListenner.onSuccess("初始化成功，正在进入中...", onVersionCheckListenner.INIT_SUCCESS);
                 }
             }
 
@@ -106,4 +107,26 @@ public class KitchenImpl {
         });
     }
 
+    /**
+     * 判断名字是否符合规范
+     *
+     * @param name
+     * @return
+     */
+    public String judgeName(String name) {
+        if (name != null && name.endsWith(".apk")) {
+            return name;
+        } else {
+            return FileConstant.APK_NAME;
+        }
+    }
+
+    /**
+     * 获取版本信息
+     *
+     * @return
+     */
+    public VersionBean getVersionBean() {
+        return mVersionBean;
+    }
 }

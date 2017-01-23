@@ -7,7 +7,20 @@ package cn.sczhckj.kitchen.listenner;
  */
 
 public interface OnVersionCheckListenner {
-    void onSuccess(String context);
+    /**
+     * 初始化成功
+     */
+    int INIT_SUCCESS = 0;
+    /**
+     * 初始化失败
+     */
+    int INIT_FAIL = 1;
+    /**
+     * 初始化有更新
+     */
+    int INIT_UPDATA = 2;
+
+    void onSuccess(String context,int type);
 
     void onFail();
 }

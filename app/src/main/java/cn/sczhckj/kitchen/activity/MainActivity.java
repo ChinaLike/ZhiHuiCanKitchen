@@ -28,6 +28,7 @@ import cn.sczhckj.kitchen.service.MediaButtonReceiver;
 import cn.sczhckj.kitchen.service.PollService;
 import cn.sczhckj.kitchen.until.AppSystemUntil;
 import cn.sczhckj.kitchen.until.show.L;
+import cn.sczhckj.kitchen.until.show.T;
 import cn.sczhckj.kitchen.websocket.WebSocket;
 import cn.sczhckj.kitchen.websocket.WebSocketConnection;
 import cn.sczhckj.kitchen.websocket.WebSocketException;
@@ -238,6 +239,7 @@ public class MainActivity extends AppCompatActivity implements OnLableClickListe
     @Override
     public boolean onKeyUp(int keyCode, KeyEvent event) {
         L.d("测试onKeyUp="+keyCode);
+        T.showShort(MainActivity.this,keyCode+"");
         switch (keyCode){
             case KeyEvent.KEYCODE_MEDIA_PREVIOUS:
                 L.d("测试7");

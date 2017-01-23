@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Environment;
+import android.view.View;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -11,7 +12,11 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 
 import cn.sczhckj.kitchen.Config;
+import cn.sczhckj.kitchen.data.constant.FileConstant;
 import cn.sczhckj.kitchen.mode.RetrofitService;
+import cn.sczhckj.kitchen.overwrite.ProgressDialog;
+import cn.sczhckj.kitchen.until.FileUntils;
+import cn.sczhckj.kitchen.until.show.L;
 import okhttp3.OkHttpClient;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
@@ -34,7 +39,7 @@ public class DownLoadManager {
      * @param apkName
      */
     public void retrofitDownload(String url, final String apkName, final Context mContext) {
-
+        final ProgressDialog dialog = dialog(mContext);
         Retrofit.Builder retrofitBuilder = new Retrofit.Builder()
                 .addConverterFactory(GsonConverterFactory.create())
                 .baseUrl(Config.HOST);
@@ -46,9 +51,12 @@ public class DownLoadManager {
         ProgressHelper.setProgressHandler(new DownloadProgressHandler() {
             @Override
             protected void onProgress(long bytesRead, long contentLength, boolean done) {
+                dialog.setProgressMax((int) (contentLength / 1024));
+                dialog.setProgress((int) (bytesRead / 1024));
+                dialog.setProgressText(String.format("%1s Kb/%2s Kb", (int) (bytesRead / 1024), (int) (contentLength / 1024)));
                 if (done) {
-                    File file = new File(Environment.getExternalStorageDirectory() + "/ZHCDownload/", apkName);
-                    autoInstall(mContext, file);
+                    File file = new File(FileUntils.getSdPath() + FileConstant.PATH, apkName);
+                    install(mContext,dialog,file);
                 }
             }
         });
@@ -59,7 +67,7 @@ public class DownLoadManager {
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                 try {
                     InputStream is = response.body().byteStream();
-                    File file = new File(Environment.getExternalStorageDirectory() + "/ZHCDownload/", apkName);
+                    File file = new File(FileUntils.getSdPath() + FileConstant.PATH, apkName);
                     FileOutputStream fos = new FileOutputStream(file);
                     BufferedInputStream bis = new BufferedInputStream(is);
                     byte[] buffer = new byte[1024];
@@ -79,6 +87,42 @@ public class DownLoadManager {
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {
 
+            }
+        });
+    }
+
+    /**
+     * 自定义进度弹窗
+     * @param mContext
+     * @return
+     */
+    private ProgressDialog dialog(Context mContext){
+        final ProgressDialog dialog = new ProgressDialog(mContext);
+        dialog.setTitle("版本更新");
+        dialog.setProgressVisibility();
+        dialog.setContextText("正在更新中...");
+        dialog.setAloneButton("等待下载", new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+            }
+        });
+        dialog.show();
+        return dialog;
+    }
+
+    /**
+     * 安装应用
+     * @param mContext
+     * @param dialog
+     * @param file
+     */
+    private void install(final Context mContext, final ProgressDialog dialog, final File file) {
+        dialog.setContextText("下载已完成，请确定安装应用！");
+        dialog.setAloneButton("安装", new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+                autoInstall(mContext, file);
             }
         });
     }
