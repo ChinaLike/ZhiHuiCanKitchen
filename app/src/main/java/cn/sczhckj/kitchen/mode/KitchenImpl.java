@@ -91,10 +91,15 @@ public class KitchenImpl {
             @Override
             public void onResponse(Call<Bean<VersionBean>> call, Response<Bean<VersionBean>> response) {
                 Bean<VersionBean> bean = response.body();
-                if (bean != null && bean.getCode() == ResponseCode.SUCCESS
-                        && bean.getResult().getCode() > AppSystemUntil.getVersionCode(mContext)) {
-                    mVersionBean = bean.getResult();
-                    onVersionCheckListenner.onSuccess("初始化成功，系统有更新...", onVersionCheckListenner.INIT_UPDATA);
+                L.d("测试===" + bean);
+                if (bean != null && bean.getCode() == ResponseCode.SUCCESS) {
+                    if (bean.getResult() != null && bean.getResult().getCode() != null &&
+                            bean.getResult().getCode() > AppSystemUntil.getVersionCode(mContext)) {
+                        mVersionBean = bean.getResult();
+                        onVersionCheckListenner.onSuccess("初始化成功，系统有更新...", onVersionCheckListenner.INIT_UPDATA);
+                    } else {
+                        onVersionCheckListenner.onSuccess("初始化成功，正在进入中...", onVersionCheckListenner.INIT_SUCCESS);
+                    }
                 } else {
                     onVersionCheckListenner.onSuccess("初始化成功，正在进入中...", onVersionCheckListenner.INIT_SUCCESS);
                 }
@@ -102,6 +107,7 @@ public class KitchenImpl {
 
             @Override
             public void onFailure(Call<Bean<VersionBean>> call, Throwable t) {
+                L.d("测试===" + t.toString());
                 onVersionCheckListenner.onFail();
             }
         });

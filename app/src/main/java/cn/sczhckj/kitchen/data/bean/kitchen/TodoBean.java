@@ -16,6 +16,8 @@ public class TodoBean {
     private Integer count;//总共份数
     private List<DetailBean> details;//单个菜品信息
 
+    private boolean isSelect;//本地字段，Item是否选中
+
     public Integer getFoodId() {
         return foodId;
     }
@@ -54,6 +56,14 @@ public class TodoBean {
 
     public void setDetails(List<DetailBean> details) {
         this.details = details;
+    }
+
+    public boolean isSelect() {
+        return isSelect;
+    }
+
+    public void setSelect(boolean select) {
+        isSelect = select;
     }
 
     @Override

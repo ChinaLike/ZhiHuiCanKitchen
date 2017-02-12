@@ -1,6 +1,7 @@
 package cn.sczhckj.kitchen.adapter;
 
 import android.content.Context;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -52,6 +53,21 @@ public class TodoAdapter extends RecyclerView.Adapter<TodoAdapter.TodoViewHolder
         } else {
             holder.foodIndexParent.setBackgroundResource(R.drawable.shape_gray);
         }
+        /**设置选中的背景*/
+        if (bean.isSelect()){
+            /**被选中*/
+            holder.parent.setBackgroundColor(ContextCompat.getColor(mContext, R.color.breviary_bg));
+            holder.foodName.setTextColor(ContextCompat.getColor(mContext, R.color.white));
+            holder.foodCount.setTextColor(ContextCompat.getColor(mContext, R.color.white));
+            holder.foodUtil.setTextColor(ContextCompat.getColor(mContext, R.color.white));
+        }else {
+            /**位置选中*/
+            holder.parent.setBackgroundColor(ContextCompat.getColor(mContext, R.color.white));
+            holder.foodName.setTextColor(ContextCompat.getColor(mContext, R.color.print_item_text));
+            holder.foodCount.setTextColor(ContextCompat.getColor(mContext, R.color.print_item_text));
+            holder.foodUtil.setTextColor(ContextCompat.getColor(mContext, R.color.print_item_text));
+        }
+
         holder.foodName.setText(bean.getName());
         holder.foodCount.setText(bean.getCount() + "");
 
@@ -102,6 +118,8 @@ public class TodoAdapter extends RecyclerView.Adapter<TodoAdapter.TodoViewHolder
         TextView foodName;
         @Bind(R.id.food_count)
         TextView foodCount;
+        @Bind(R.id.food_util)
+        TextView foodUtil;
 
         public TodoViewHolder(View itemView) {
             super(itemView);

@@ -108,6 +108,18 @@ public class FoodFragment extends BaseFragment implements Callback<Bean<List<Tod
      * 动画
      */
     private AnimationImpl animation;
+    /**
+     * 当前显示位置
+     */
+    private int currentPosition = -1;
+    /**
+     * 当前需要出菜
+     */
+    private TodoBean currentBean = new TodoBean();
+    /**
+     * 布局管理器
+     */
+    private LinearLayoutManager manager;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -153,7 +165,8 @@ public class FoodFragment extends BaseFragment implements Callback<Bean<List<Tod
      */
     private void initTodoAdapter() {
         mTodoAdapter = new TodoAdapter(getContext(), null);
-        foodRecyclerview.setLayoutManager(new LinearLayoutManager(getContext()));
+        manager = new LinearLayoutManager(getContext());
+        foodRecyclerview.setLayoutManager(manager);
         foodRecyclerview.setAdapter(mTodoAdapter);
         foodRecyclerview.addItemDecoration(new DashlineItemDivider(ContextCompat.getColor(getContext(), R.color.line), 100000, 1));
     }
@@ -179,7 +192,9 @@ public class FoodFragment extends BaseFragment implements Callback<Bean<List<Tod
             disposeHeader(headBean);
             mList.remove(0);
             EventBus.getDefault().post(new SendEvent(SendEvent.FOOD_LABLE, headBean.getName(), headBean.getDetails().size()));
-        }else {
+            /**每一次刷新时，如果不操作，将会默认选择第一个*/
+            currentBean = headBean;
+        } else {
             foodName.setText("暂无菜品");
             mTableAdapter.notifyDataSetChanged(null);
             EventBus.getDefault().post(new SendEvent(SendEvent.FOOD_LABLE, "暂无菜品", 0));
@@ -195,6 +210,7 @@ public class FoodFragment extends BaseFragment implements Callback<Bean<List<Tod
     private void disposeHeader(TodoBean bean) {
         foodName.setText(bean.getName());
         mTableAdapter.notifyDataSetChanged(bean.getDetails());
+        mTableAdapter.handleShow(true);
     }
 
 
@@ -285,11 +301,13 @@ public class FoodFragment extends BaseFragment implements Callback<Bean<List<Tod
             setPrintTitle(event.getName(), event.getTable());
         } else if (event.getType() == SendEvent.KEY_AFFIRM && MainActivity.isFoodView) {
             /**出菜，出菜顺序是按照第一项第一桌顺序出菜*/
-            mKitchen.foodFinish(headBean, 0, finishCallback);
+            mKitchen.foodFinish(currentBean, 0, finishCallback);
         } else if (event.getType() == SendEvent.KEY_NEXT && MainActivity.isFoodView) {
             /**下一个*/
+            next();
         } else if (event.getType() == SendEvent.KEY_PRE && MainActivity.isFoodView) {
             /**上一个*/
+            pre();
         } else if (event.getType() == SendEvent.NON_AUTO_FOOD_FINISH) {
             /**手动点击菜品完成*/
             if (event.isHeader()) {
@@ -300,6 +318,59 @@ public class FoodFragment extends BaseFragment implements Callback<Bean<List<Tod
                 mKitchen.foodFinish(event.getBean(), 0, finishCallback);
             }
         }
+    }
+
+    /**
+     * 下一个
+     */
+    private void next() {
+        int size = todoBeen.size();//出去头部数据
+        if (currentPosition < (size - 1)) {
+            currentPosition++;
+            mTableAdapter.handleShow(false);
+        } else {
+            currentPosition = -1;
+            mTableAdapter.handleShow(true);
+        }
+        refreshAdapter(currentPosition);
+    }
+
+    /**
+     * 上一个
+     */
+    private void pre() {
+        if (currentPosition > 0) {
+            currentPosition--;
+            mTableAdapter.handleShow(false);
+        } else {
+            currentPosition = -1;
+            mTableAdapter.handleShow(true);
+        }
+        refreshAdapter(currentPosition);
+    }
+
+    /**
+     * 刷新适配
+     *
+     * @param index
+     */
+    private void refreshAdapter(int index) {
+        for (int i = 0; i < todoBeen.size(); i++) {
+            if (index == -1) {
+                todoBeen.get(i).setSelect(false);
+                currentBean = headBean;
+            } else {
+                currentBean = todoBeen.get(index);
+                if (i == index) {
+                    todoBeen.get(i).setSelect(true);
+                } else {
+                    todoBeen.get(i).setSelect(false);
+                }
+            }
+        }
+        mTodoAdapter.notifyDataSetChanged(todoBeen);
+        /**把最新项移动到顶端*/
+        move(index, mTodoAdapter, foodRecyclerview, manager);
     }
 
 

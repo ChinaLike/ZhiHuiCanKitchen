@@ -75,7 +75,7 @@ public class MainActivity extends AppCompatActivity implements OnLableClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
-        registerKey();
+//        registerKey();
         init();
 
     }
@@ -191,12 +191,11 @@ public class MainActivity extends AppCompatActivity implements OnLableClickListe
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        manager.unregisterMediaButtonEventReceiver(mComponentName);
+//        manager.unregisterMediaButtonEventReceiver(mComponentName);
     }
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        L.d("测试onKeyDown="+keyCode);
         if (keyCode == KeyEvent.KEYCODE_BACK) {
             //监控/拦截/屏蔽返回键
             return false;
@@ -238,17 +237,23 @@ public class MainActivity extends AppCompatActivity implements OnLableClickListe
 
     @Override
     public boolean onKeyUp(int keyCode, KeyEvent event) {
-        L.d("测试onKeyUp="+keyCode);
-        T.showShort(MainActivity.this,keyCode+"");
-        switch (keyCode){
-            case KeyEvent.KEYCODE_MEDIA_PREVIOUS:
-                L.d("测试7");
+        T.showShort(MainActivity.this, keyCode + "");
+        switch (keyCode) {
+            case KeyEvent.KEYCODE_NUMPAD_8:
+                /**上,Code码为152*/
+                EventBus.getDefault().post(new SendEvent(SendEvent.KEY_PRE));
                 break;
-            case KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE:
-                L.d("测试8");
+            case KeyEvent.KEYCODE_NUMPAD_2:
+                /**下,Code码为146*/
+                EventBus.getDefault().post(new SendEvent(SendEvent.KEY_NEXT));
                 break;
-            case KeyEvent.KEYCODE_HEADSETHOOK:
-                L.d("测试9");
+            case KeyEvent.KEYCODE_NUMPAD_5:
+                /**确认,Code码为149*/
+                EventBus.getDefault().post(new SendEvent(SendEvent.KEY_AFFIRM));
+                break;
+            case KeyEvent.KEYCODE_NUMPAD_7:
+                /**打印,Code码为151*/
+                onLableClick(OnLableClickListenner.PRINT_LABLE);
                 break;
         }
         return super.onKeyUp(keyCode, event);

@@ -50,6 +50,7 @@
             android:textSize="@dimen/food_item_text_size" />
 
         <TextView
+            android:id="@+id/food_util"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="5dp"

@@ -43,10 +43,15 @@ public class TableAdapter extends RecyclerView.Adapter<TableAdapter.TableViewHol
     public void onBindViewHolder(TableViewHolder holder, final int position) {
         DetailBean bean = mList.get(position);
         holder.tableName.setText(bean.getTableName());
+        if (bean.isSelect()) {
+            holder.tableName.setTextColor(0xFF3C3C3C);
+        } else {
+            holder.tableName.setTextColor(0xFFFFFFFF);
+        }
         holder.tableName.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                /**手动点击菜品进行出菜*/
+                /**手动点击菜品进行出菜,对于同一个菜品无需对指定那一桌出菜？*/
                 EventBus.getDefault().post(new SendEvent(SendEvent.NON_AUTO_FOOD_FINISH, position, true));
             }
         });
@@ -54,6 +59,28 @@ public class TableAdapter extends RecyclerView.Adapter<TableAdapter.TableViewHol
 
     public void notifyDataSetChanged(List<DetailBean> mList) {
         this.mList = mList;
+        notifyDataSetChanged();
+    }
+
+    /**
+     * 选中台桌
+     *
+     * @param isShow 是否选中
+     */
+    public void handleShow(boolean isShow) {
+        if (mList != null && isShow) {
+            for (int i = 0; i < mList.size(); i++) {
+                if (i == 0) {
+                    mList.get(i).setSelect(true);
+                } else {
+                    mList.get(i).setSelect(false);
+                }
+            }
+        } else {
+            for (int i = 0; i < mList.size(); i++) {
+                mList.get(i).setSelect(false);
+            }
+        }
         notifyDataSetChanged();
     }
 

@@ -66,6 +66,11 @@ public class SendEvent {
         this.type = type;
     }
 
+    public SendEvent(int type, boolean isHeader) {
+        this.type = type;
+        this.isHeader = isHeader;
+    }
+
     public SendEvent(int type, String name, String table) {
         this.type = type;
         this.name = name;

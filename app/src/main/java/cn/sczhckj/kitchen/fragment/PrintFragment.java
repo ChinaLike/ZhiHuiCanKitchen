@@ -91,6 +91,10 @@ public class PrintFragment extends BaseFragment implements Callback<Bean<List<Do
      * 动画
      */
     private AnimationImpl animation;
+    /**
+     * 布局管理器
+     */
+    private LinearLayoutManager manager;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -139,7 +143,8 @@ public class PrintFragment extends BaseFragment implements Callback<Bean<List<Do
     private void initAdapter() {
         mPrintAdapter = new PrintAdapter(getContext(), null);
         mPrintAdapter.setOnItemClickListenner(this);
-        printRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        manager = new LinearLayoutManager(getContext());
+        printRecyclerView.setLayoutManager(manager);
         printRecyclerView.setAdapter(mPrintAdapter);
     }
 
@@ -258,8 +263,10 @@ public class PrintFragment extends BaseFragment implements Callback<Bean<List<Do
         int size = mList.size();
         if (index < (size - 1)) {
             index++;
-            refreshAdapter(index);
+        }else {
+            index = 0;
         }
+        refreshAdapter(index);
     }
 
     /**
@@ -279,6 +286,7 @@ public class PrintFragment extends BaseFragment implements Callback<Bean<List<Do
      */
     private void refreshAdapter(int index) {
         for (int i = 0; i < mList.size(); i++) {
+            doneBean = mList.get(index);
             if (i == index) {
                 mList.get(i).setSelect(true);
             } else {
@@ -286,6 +294,7 @@ public class PrintFragment extends BaseFragment implements Callback<Bean<List<Do
             }
         }
         mPrintAdapter.notifyDataSetChanged(mList);
+        move(index, mPrintAdapter, printRecyclerView, manager);
     }
 
     @Override

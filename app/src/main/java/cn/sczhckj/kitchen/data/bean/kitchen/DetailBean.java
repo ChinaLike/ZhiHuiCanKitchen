@@ -14,6 +14,8 @@ public class DetailBean {
     private Integer detailId;//明细记录ID
     private Integer taskSubId;//子任务ID
 
+    private boolean isSelect;
+
     public Integer getTableId() {
         return tableId;
     }
@@ -52,6 +54,14 @@ public class DetailBean {
 
     public void setTaskSubId(Integer taskSubId) {
         this.taskSubId = taskSubId;
+    }
+
+    public boolean isSelect() {
+        return isSelect;
+    }
+
+    public void setSelect(boolean select) {
+        isSelect = select;
     }
 
     @Override
