@@ -9,6 +9,11 @@ package cn.sczhckj.kitchen;
 public interface Config {
 
     /**
+     * 地址
+     */
+//    String ADDRESS = "cn.sczhckj.pad.rest/";
+    String ADDRESS = "pad/";
+    /**
      * IP地址
      */
     String IP = "192.168.0.50";
@@ -16,15 +21,15 @@ public interface Config {
     /**
      * 主机
      */
-    String HOST = "http://" + IP + ":8080/pad/";
+    String HOST = "http://" + IP + ":8080/"+ADDRESS;
     /**
      * 后厨推送
      */
-    String URL_KITCHEN_SERVICE = "ws://" + IP + ":8080/pad/ws/kitchen?username=";
+    String URL_KITCHEN_SERVICE = "ws://" + IP + ":8080/"+ADDRESS+"ws/kitchen?username=";
 
     /**
      * 心跳检测
      */
-    String URL_HEART_SERVICE = "ws://" + IP + ":8080/pad/ws/heart?username=";
+    String URL_HEART_SERVICE = "ws://" + IP + ":8080/"+ADDRESS+"ws/heart?username=";
 
 }

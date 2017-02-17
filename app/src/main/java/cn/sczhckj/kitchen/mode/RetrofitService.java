@@ -66,4 +66,11 @@ public interface RetrofitService {
     @GET
     Call<ResponseBody> download(@Url String url);
 
+    /**
+     * 异常信息提交
+     */
+    @FormUrlEncoded
+    @POST("rest/device/exception")
+    Call<Bean<ResponseCommonBean>> exception(@Field("p") String p);
+
 }

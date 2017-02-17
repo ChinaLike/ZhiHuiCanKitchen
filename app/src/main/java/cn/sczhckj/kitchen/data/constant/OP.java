@@ -38,5 +38,9 @@ public interface OP {
      * APP推送 心跳
      */
     String PUSH_HEART = "heart";
+    /**
+     * 异常收集
+     */
+    String EXCEPTION = "exception";
 
 }
