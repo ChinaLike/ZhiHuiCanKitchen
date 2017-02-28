@@ -240,15 +240,15 @@ public class MainActivity extends AppCompatActivity implements OnLableClickListe
         T.showShort(MainActivity.this, keyCode + "");
         switch (keyCode) {
             case KeyEvent.KEYCODE_NUMPAD_8:
-                /**上,Code码为152*/
+                /**上,Code码为152-45*/
                 EventBus.getDefault().post(new SendEvent(SendEvent.KEY_PRE));
                 break;
             case KeyEvent.KEYCODE_NUMPAD_2:
-                /**下,Code码为146*/
+                /**下,Code码为146-51*/
                 EventBus.getDefault().post(new SendEvent(SendEvent.KEY_NEXT));
                 break;
             case KeyEvent.KEYCODE_NUMPAD_5:
-                /**确认,Code码为149*/
+                /**确认,Code码为149-33*/
                 EventBus.getDefault().post(new SendEvent(SendEvent.KEY_AFFIRM));
                 break;
             case KeyEvent.KEYCODE_NUMPAD_7:
