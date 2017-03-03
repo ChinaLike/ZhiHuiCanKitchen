@@ -41,6 +41,8 @@ public class HeartService extends Service implements WebSocket.ConnectionHandler
 
     private WebSocketConnection mWebSocket = new WebSocketConnection();
 
+    private Timer timer;
+
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
@@ -94,7 +96,6 @@ public class HeartService extends Service implements WebSocket.ConnectionHandler
      * 重新连接
      */
     private void reConnect() {
-        Timer timer = new Timer();
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
@@ -127,14 +128,15 @@ public class HeartService extends Service implements WebSocket.ConnectionHandler
 
     @Override
     public void onClose(int code, String reason) {
-        if (WebSocket.ConnectionHandler.CLOSE_CANNOT_CONNECT !=code) {
-            L.d("WebSocket code = " + code + ",reason=" + reason);
-            reConnect();
-        }
+        timer = new Timer();
+        reConnect();
     }
 
     @Override
     public void onOpen() {
+        if (timer != null) {
+            timer.cancel();
+        }
     }
 
     @Override
