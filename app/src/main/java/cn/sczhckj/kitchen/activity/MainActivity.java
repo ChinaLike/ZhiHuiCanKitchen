@@ -1,9 +1,6 @@
 package cn.sczhckj.kitchen.activity;
 
-import android.content.ComponentName;
-import android.content.Context;
 import android.content.Intent;
-import android.media.AudioManager;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
@@ -16,18 +13,14 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import cn.sczhckj.kitchen.Config;
 import cn.sczhckj.kitchen.R;
-import cn.sczhckj.kitchen.animation.AnimationImpl;
 import cn.sczhckj.kitchen.data.bean.PushCommonBean;
 import cn.sczhckj.kitchen.data.constant.OP;
 import cn.sczhckj.kitchen.data.event.SendEvent;
 import cn.sczhckj.kitchen.fragment.FoodFragment;
 import cn.sczhckj.kitchen.fragment.PrintFragment;
 import cn.sczhckj.kitchen.listenner.OnLableClickListenner;
-import cn.sczhckj.kitchen.mode.KitchenImpl;
-import cn.sczhckj.kitchen.service.MediaButtonReceiver;
 import cn.sczhckj.kitchen.service.PollService;
 import cn.sczhckj.kitchen.until.AppSystemUntil;
-import cn.sczhckj.kitchen.until.show.L;
 import cn.sczhckj.kitchen.until.show.T;
 import cn.sczhckj.kitchen.websocket.WebSocket;
 import cn.sczhckj.kitchen.websocket.WebSocketConnection;
@@ -53,15 +46,6 @@ public class MainActivity extends AppCompatActivity implements OnLableClickListe
      */
     private Intent intent;
     /**
-     * 获得AudioManager对象
-     */
-    private AudioManager manager;
-    /**
-     * 构造一个ComponentName，指向MediaoButtonReceiver类
-     * 下面为了叙述方便，我直接使用ComponentName类来替代MediaoButtonReceiver类
-     */
-    private ComponentName mComponentName;
-    /**
      * 是否处于待加工菜品界面
      */
     public static boolean isFoodView = true;
@@ -75,7 +59,6 @@ public class MainActivity extends AppCompatActivity implements OnLableClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
-//        registerKey();
         init();
 
     }
@@ -108,19 +91,6 @@ public class MainActivity extends AppCompatActivity implements OnLableClickListe
     private void initService() {
         intent = new Intent(MainActivity.this, PollService.class);
         startService(intent);
-    }
-
-    /**
-     * 注册按键广播
-     */
-    private void registerKey() {
-        //获得AudioManager对象
-        manager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
-        //构造一个ComponentName，指向MediaoButtonReceiver类
-        //下面为了叙述方便，我直接使用ComponentName类来替代MediaoButtonReceiver类
-        mComponentName = new ComponentName(getPackageName(), MediaButtonReceiver.class.getName());
-        //注册一个MedioButtonReceiver广播监听
-        manager.registerMediaButtonEventReceiver(mComponentName);
     }
 
     /**
@@ -191,7 +161,6 @@ public class MainActivity extends AppCompatActivity implements OnLableClickListe
     @Override
     protected void onDestroy() {
         super.onDestroy();
-//        manager.unregisterMediaButtonEventReceiver(mComponentName);
     }
 
     @Override
@@ -239,21 +208,25 @@ public class MainActivity extends AppCompatActivity implements OnLableClickListe
     public boolean onKeyUp(int keyCode, KeyEvent event) {
         T.showShort(MainActivity.this, keyCode + "");
         switch (keyCode) {
-            case KeyEvent.KEYCODE_NUMPAD_8:
+            case KeyEvent.KEYCODE_Q:
                 /**上,Code码为152-45*/
                 EventBus.getDefault().post(new SendEvent(SendEvent.KEY_PRE));
                 break;
-            case KeyEvent.KEYCODE_NUMPAD_2:
+            case KeyEvent.KEYCODE_W:
                 /**下,Code码为146-51*/
                 EventBus.getDefault().post(new SendEvent(SendEvent.KEY_NEXT));
                 break;
-            case KeyEvent.KEYCODE_NUMPAD_5:
+            case KeyEvent.KEYCODE_E:
                 /**确认,Code码为149-33*/
                 EventBus.getDefault().post(new SendEvent(SendEvent.KEY_AFFIRM));
                 break;
-            case KeyEvent.KEYCODE_NUMPAD_7:
-                /**打印,Code码为151*/
-                onLableClick(OnLableClickListenner.PRINT_LABLE);
+            case KeyEvent.KEYCODE_R:
+                /**打印,Code码为151-46*/
+                if (!isFoodView) {
+                    onLableClick(OnLableClickListenner.FOOD_LABLE);
+                } else {
+                    onLableClick(OnLableClickListenner.PRINT_LABLE);
+                }
                 break;
         }
         return super.onKeyUp(keyCode, event);

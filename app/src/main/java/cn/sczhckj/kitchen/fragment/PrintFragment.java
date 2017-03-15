@@ -192,6 +192,8 @@ public class PrintFragment extends BaseFragment implements Callback<Bean<List<Do
             if (bean != null && bean.getCode() == ResponseCode.SUCCESS) {
                 T.showShort(getContext(), bean.getMessage());
                 done();
+            } else if (bean != null && bean.getCode() == ResponseCode.FAILURE) {
+                T.showShort(getContext(), bean.getMessage());
             } else {
                 T.showShort(getContext(), "补打失败");
             }
@@ -263,7 +265,7 @@ public class PrintFragment extends BaseFragment implements Callback<Bean<List<Do
         int size = mList.size();
         if (index < (size - 1)) {
             index++;
-        }else {
+        } else {
             index = 0;
         }
         refreshAdapter(index);

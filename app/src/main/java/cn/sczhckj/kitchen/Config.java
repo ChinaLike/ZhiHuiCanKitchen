@@ -6,30 +6,53 @@ package cn.sczhckj.kitchen;
  * @ email: 572919350@qq.com
  */
 
-public interface Config {
+public class Config {
 
     /**
      * 地址
      */
-//    String ADDRESS = "cn.sczhckj.pad.rest/";
-    String ADDRESS = "pad/";
-    /**
-     * IP地址
-     */
-    String IP = "192.168.0.50";
+    public static String ADDRESS = "pad/";
 
     /**
      * 主机
      */
-    String HOST = "http://" + IP + ":8080/"+ADDRESS;
+    public static String HOST = "http://" + host() + ADDRESS;
     /**
      * 后厨推送
      */
-    String URL_KITCHEN_SERVICE = "ws://" + IP + ":8080/"+ADDRESS+"ws/kitchen?username=";
+    public static String URL_KITCHEN_SERVICE = "ws://" + host() + ADDRESS + "ws/kitchen?username=";
 
     /**
      * 心跳检测
      */
-    String URL_HEART_SERVICE = "ws://" + IP + ":8080/"+ADDRESS+"ws/heart?username=";
+    public static String URL_HEART_SERVICE = "ws://" + host() + ADDRESS + "ws/heart?username=";
 
+    /**
+     * 获取IP
+     *
+     * @return
+     */
+    public static String ip() {
+        return (String) MyApplication.share.getData("ip", "192.168.0.25");
+    }
+
+    public static String port() {
+        return ":" + MyApplication.share.getData("port", "8080") + "/";
+    }
+
+    public static String host() {
+        return ip() + port();
+    }
+
+    public static void setHOST() {
+        Config.HOST = "http://" + host() + ADDRESS;
+    }
+
+    public static void setUrlKitchenService() {
+        URL_KITCHEN_SERVICE = "ws://" + host() + ADDRESS + "ws/kitchen?username=";
+    }
+
+    public static void setUrlHeartService() {
+        URL_HEART_SERVICE = "ws://" + host() + ADDRESS + "ws/heart?username=";
+    }
 }

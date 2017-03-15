@@ -29,4 +29,8 @@
     <dimen name="food_item_padding">35dp</dimen>
     <dimen name="food_item_unitl">11sp</dimen>
 
+    <!--圆角-->
+    <dimen name="corners">5dp</dimen>
+    <dimen name="hint_line">1dp</dimen>
+
 </resources>

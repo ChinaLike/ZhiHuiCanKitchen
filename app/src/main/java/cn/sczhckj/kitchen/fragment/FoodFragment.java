@@ -254,7 +254,9 @@ public class FoodFragment extends BaseFragment implements Callback<Bean<List<Tod
                 /**出菜成功刷新菜品*/
                 initTodo();
                 EventBus.getDefault().post(new SendEvent(SendEvent.FOOD_FINISH));
-            } else {
+            } else if (bean != null && bean.getCode() == ResponseCode.FAILURE){
+                T.showLong(getContext(), bean.getMessage());
+            }else {
                 T.showLong(getContext(), "出菜未成功，请重新申请");
             }
         }

@@ -29,4 +29,9 @@
     <!--分割线颜色-->
     <color name="line">#D7DBDA</color>
 
+    <color name="yellow">#FBDB5A</color>
+    <color name="black">#FF000000</color>
+    <color name="cart_line">#F0F0F0</color>
+    <color name="hint_color">#DDDDDD</color>
+
 </resources>

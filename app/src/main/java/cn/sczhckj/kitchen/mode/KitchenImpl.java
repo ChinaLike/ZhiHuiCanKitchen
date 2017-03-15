@@ -107,7 +107,6 @@ public class KitchenImpl {
 
             @Override
             public void onFailure(Call<Bean<VersionBean>> call, Throwable t) {
-                L.d("测试===" + t.toString());
                 onVersionCheckListenner.onFail();
             }
         });

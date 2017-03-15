@@ -2,7 +2,9 @@ package cn.sczhckj.kitchen;
 
 import android.app.Application;
 
+import cn.sczhckj.kitchen.data.constant.FileConstant;
 import cn.sczhckj.kitchen.manage.ExceptionPush;
+import cn.sczhckj.kitchen.mode.StorageImpl;
 
 /**
  * @ describe:
@@ -12,9 +14,12 @@ import cn.sczhckj.kitchen.manage.ExceptionPush;
 
 public class MyApplication extends Application {
 
+    public static StorageImpl share;
+
     @Override
     public void onCreate() {
         super.onCreate();
+        share = new StorageImpl(getApplicationContext(), FileConstant.USER);
         /**异常提交*/
         ExceptionPush.init(this).openCrashHandler(Config.HOST, "p");
     }

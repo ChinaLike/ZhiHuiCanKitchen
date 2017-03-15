@@ -16,4 +16,9 @@ public interface FileConstant {
      * 文件存放的子目录
      */
     String PATH = "ZHCDownload/apk/";
+
+    /**
+     * 数据保存-Share表
+     */
+    String USER = "tab_user";
 }

@@ -2,11 +2,10 @@ package cn.sczhckj.kitchen.service;
 
 import android.app.Service;
 import android.content.Intent;
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.Message;
 import android.support.annotation.Nullable;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -34,14 +33,15 @@ public class HeartService extends Service implements WebSocket.ConnectionHandler
      * 心跳发送数据时间
      */
     private final int TIME = 30 * 1000;
-    /**
-     * 重新连接时间
-     */
-    private final int RECONNECT_TIME = 30 * 1000;
 
     private WebSocketConnection mWebSocket = new WebSocketConnection();
 
     private Timer timer;
+
+    /**
+     * 是否链接
+     */
+    private boolean isConnect = false;
 
     @Nullable
     @Override
@@ -56,52 +56,55 @@ public class HeartService extends Service implements WebSocket.ConnectionHandler
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        connect();
-        return super.onStartCommand(intent, flags, startId);
-    }
-
-    /**
-     * 连接
-     */
-    private void connect() {
         try {
+            timer = new Timer();
             mWebSocket.connect(Config.URL_HEART_SERVICE + AppSystemUntil.getAndroidID(getApplicationContext()), this);
-            sendMessage(mWebSocket);
+            startTimer();
         } catch (WebSocketException e) {
             e.printStackTrace();
         }
+        return super.onStartCommand(intent, flags, startId);
+    }
 
+    Handler mHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            switch (msg.what) {
+                case 0x123:
+                    mWebSocket.reconnect();
+                    break;
+                case 0x122:
+                    String msgStr = msg();
+                    mWebSocket.sendTextMessage(msgStr);
+                    break;
+            }
+        }
+    };
+
+    private void startTimer() {
+        if (timer == null) {
+            timer = new Timer();
+        }
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                if (mWebSocket != null){
+                    if (isConnect){
+                        /**如果连接，发送心跳*/
+                        mHandler.sendEmptyMessage(0x122);
+                    }else {
+                        /**没有连接，重新连接*/
+                        mHandler.sendEmptyMessage(0x123);
+                    }
+                }
+            }
+        }, 100, TIME);
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-    }
-
-    /**
-     * 间隔发送消息检测心跳
-     */
-    private void sendMessage(final WebSocketConnection mWebSocket) {
-        Timer timer = new Timer();
-        timer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                String msg = msg();
-                mWebSocket.sendTextMessage(msg);
-            }
-        }, 100, TIME);
-    }
-
-    /**
-     * 重新连接
-     */
-    private void reConnect() {
-        timer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                mWebSocket.reconnect();
-            }
-        }, 0, RECONNECT_TIME);
     }
 
     /**
@@ -113,12 +116,10 @@ public class HeartService extends Service implements WebSocket.ConnectionHandler
         HeartBean bean = new HeartBean();
         bean.setDeviceId(AppSystemUntil.getAndroidID(getApplicationContext()));
         bean.setIp(AppSystemUntil.ip(getApplicationContext()));
-
         RestRequest<HeartBean> restRequest = JSONRestRequest.Builder.build(HeartBean.class)
                 .op(OP.PUSH_HEART)
                 .time()
                 .bean(bean);
-
         return restRequest.toRequestString();
     }
 
@@ -128,15 +129,12 @@ public class HeartService extends Service implements WebSocket.ConnectionHandler
 
     @Override
     public void onClose(int code, String reason) {
-        timer = new Timer();
-        reConnect();
+        isConnect = false;
     }
 
     @Override
     public void onOpen() {
-        if (timer != null) {
-            timer.cancel();
-        }
+        isConnect =true;
     }
 
     @Override

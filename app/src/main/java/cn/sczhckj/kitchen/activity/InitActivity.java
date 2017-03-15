@@ -17,11 +17,12 @@ import cn.sczhckj.kitchen.listenner.OnVersionCheckListenner;
 import cn.sczhckj.kitchen.manage.DownLoadManager;
 import cn.sczhckj.kitchen.mode.KitchenImpl;
 import cn.sczhckj.kitchen.overwrite.ProgressDialog;
+import cn.sczhckj.kitchen.overwrite.SettingPopupWindow;
 import cn.sczhckj.kitchen.service.HeartService;
 import cn.sczhckj.kitchen.until.AppSystemUntil;
 import cn.sczhckj.kitchen.until.FileUntils;
 
-public class InitActivity extends AppCompatActivity implements OnVersionCheckListenner {
+public class InitActivity extends AppCompatActivity implements OnVersionCheckListenner ,SettingPopupWindow.OnButtonListener{
 
     @Bind(R.id.title)
     TextView title;
@@ -29,6 +30,8 @@ public class InitActivity extends AppCompatActivity implements OnVersionCheckLis
     RelativeLayout activityInit;
     @Bind(R.id.device_id)
     TextView deviceId;
+
+    private SettingPopupWindow popupWindow;
 
     /**
      * 版本更新
@@ -91,6 +94,11 @@ public class InitActivity extends AppCompatActivity implements OnVersionCheckLis
 
     @Override
     public void onFail() {
+        if (popupWindow == null){
+            popupWindow = new SettingPopupWindow(InitActivity.this);
+        }
+        popupWindow.setOnButtonListener(this);
+        popupWindow.show();
         activityInit.setClickable(true);
         title.setText("初始化失败，点击屏幕重新初始化...");
     }
@@ -132,4 +140,9 @@ public class InitActivity extends AppCompatActivity implements OnVersionCheckLis
         dialog.show();
     }
 
+    @Override
+    public void affirm() {
+        init();
+        startService();
+    }
 }
