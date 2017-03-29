@@ -1,6 +1,7 @@
 package cn.sczhckj.kitchen.until.show;
 
 import android.content.Context;
+import android.view.Gravity;
 import android.widget.Toast;
 
 /**
@@ -70,6 +71,32 @@ public class T {
     public static void show(Context context, int message, int duration) {
         if (isShow)
             Toast.makeText(context, message, duration).show();
+    }
+
+    /**
+     * 在屏幕中央显示短时间弹窗
+     * @param context
+     * @param message
+     */
+    public static void showCenterShort(Context context, CharSequence message){
+        if (isShow){
+            Toast toast = Toast.makeText(context, message, Toast.LENGTH_SHORT);
+            toast.setGravity(Gravity.CENTER,0,0);
+            toast.show();
+        }
+    }
+
+    /**
+     * 在屏幕中央显示长时间弹窗
+     * @param context
+     * @param message
+     */
+    public static void showCenterLong(Context context, CharSequence message){
+        if (isShow){
+            Toast toast = Toast.makeText(context, message, Toast.LENGTH_LONG);
+            toast.setGravity(Gravity.CENTER,0,0);
+            toast.show();
+        }
     }
 
 }

@@ -99,7 +99,6 @@ public class PrintFragment extends BaseFragment implements Callback<Bean<List<Do
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EventBus.getDefault().register(this);
     }
 
     @Nullable
@@ -152,7 +151,6 @@ public class PrintFragment extends BaseFragment implements Callback<Bean<List<Do
     public void onDestroyView() {
         super.onDestroyView();
         ButterKnife.unbind(this);
-        EventBus.getDefault().unregister(this);
     }
 
     @OnClick(R.id.food_breviary_parent)
@@ -190,18 +188,18 @@ public class PrintFragment extends BaseFragment implements Callback<Bean<List<Do
         public void onResponse(Call<Bean<ResponseCommonBean>> call, Response<Bean<ResponseCommonBean>> response) {
             Bean<ResponseCommonBean> bean = response.body();
             if (bean != null && bean.getCode() == ResponseCode.SUCCESS) {
-                T.showShort(getContext(), bean.getMessage());
+                T.showCenterShort(getContext(), bean.getMessage());
                 done();
             } else if (bean != null && bean.getCode() == ResponseCode.FAILURE) {
-                T.showShort(getContext(), bean.getMessage());
+                T.showCenterShort(getContext(), bean.getMessage());
             } else {
-                T.showShort(getContext(), "补打失败");
+                T.showCenterShort(getContext(), "补打失败");
             }
         }
 
         @Override
         public void onFailure(Call<Bean<ResponseCommonBean>> call, Throwable t) {
-            T.showShort(getContext(), "补打失败");
+            T.showCenterShort(getContext(), "补打失败");
         }
     };
 
@@ -236,8 +234,11 @@ public class PrintFragment extends BaseFragment implements Callback<Bean<List<Do
         }
     }
 
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void reviceMessage(SendEvent event) {
+    /**
+     * 补打事件
+     * @param event
+     */
+    public void printEvent(SendEvent event) {
         if (event.getType() == SendEvent.FOOD_LABLE) {
             /**刷新待加工缩略信息*/
             setFoodTitle(event.getName(), event.getCount());

@@ -33,7 +33,7 @@ public class Config {
      * @return
      */
     public static String ip() {
-        return (String) MyApplication.share.getData("ip", "192.168.0.25");
+        return (String) MyApplication.share.getData("ip", "192.168.0.88");
     }
 
     public static String port() {

@@ -7,7 +7,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.KeyEvent;
 import android.widget.FrameLayout;
 
+import org.apache.log4j.chainsaw.Main;
 import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -42,10 +45,6 @@ public class MainActivity extends AppCompatActivity implements OnLableClickListe
      */
     private PrintFragment mPrintFragment;
     /**
-     * 轮询Service
-     */
-    private Intent intent;
-    /**
      * 是否处于待加工菜品界面
      */
     public static boolean isFoodView = true;
@@ -54,13 +53,15 @@ public class MainActivity extends AppCompatActivity implements OnLableClickListe
      */
     private WebSocketConnection connection;
 
+    private Intent intent;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
+        EventBus.getDefault().register(this);
         init();
-
     }
 
     /**
@@ -69,8 +70,8 @@ public class MainActivity extends AppCompatActivity implements OnLableClickListe
     private void init() {
         initPrintFragment();
         initFoodFragment();
-        initService();
         initWebSocket();
+        initService();
     }
 
     /**
@@ -84,6 +85,7 @@ public class MainActivity extends AppCompatActivity implements OnLableClickListe
             e.printStackTrace();
         }
     }
+
 
     /**
      * 初始化服务轮询待加工菜品
@@ -161,6 +163,8 @@ public class MainActivity extends AppCompatActivity implements OnLableClickListe
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        stopService(intent);
+        EventBus.getDefault().unregister(this);
     }
 
     @Override
@@ -206,7 +210,6 @@ public class MainActivity extends AppCompatActivity implements OnLableClickListe
 
     @Override
     public boolean onKeyUp(int keyCode, KeyEvent event) {
-        T.showShort(MainActivity.this, keyCode + "");
         switch (keyCode) {
             case KeyEvent.KEYCODE_Q:
                 /**上,Code码为152-45*/
@@ -231,4 +234,15 @@ public class MainActivity extends AppCompatActivity implements OnLableClickListe
         }
         return super.onKeyUp(keyCode, event);
     }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void eventBus(SendEvent event){
+        if (mFoodFragment != null){
+            mFoodFragment.foodEvent(event);
+        }
+        if (mPrintFragment != null){
+            mPrintFragment.printEvent(event);
+        }
+    }
+
 }

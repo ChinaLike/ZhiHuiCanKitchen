@@ -9,8 +9,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -31,7 +29,6 @@ import cn.sczhckj.kitchen.adapter.TableAdapter;
 import cn.sczhckj.kitchen.adapter.TodoAdapter;
 import cn.sczhckj.kitchen.animation.AnimationImpl;
 import cn.sczhckj.kitchen.data.bean.Bean;
-import cn.sczhckj.kitchen.data.bean.RequestCommonBean;
 import cn.sczhckj.kitchen.data.bean.ResponseCommonBean;
 import cn.sczhckj.kitchen.data.bean.kitchen.TodoBean;
 import cn.sczhckj.kitchen.data.event.SendEvent;
@@ -39,10 +36,7 @@ import cn.sczhckj.kitchen.data.response.ResponseCode;
 import cn.sczhckj.kitchen.listenner.OnLableClickListenner;
 import cn.sczhckj.kitchen.mode.KitchenImpl;
 import cn.sczhckj.kitchen.mode.KitchenMode;
-import cn.sczhckj.kitchen.mode.RetrofitRequest;
 import cn.sczhckj.kitchen.overwrite.DashlineItemDivider;
-import cn.sczhckj.kitchen.until.AppSystemUntil;
-import cn.sczhckj.kitchen.until.show.L;
 import cn.sczhckj.kitchen.until.show.T;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -124,7 +118,6 @@ public class FoodFragment extends BaseFragment implements Callback<Bean<List<Tod
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EventBus.getDefault().register(this);
     }
 
     @Nullable
@@ -218,6 +211,12 @@ public class FoodFragment extends BaseFragment implements Callback<Bean<List<Tod
     public void onDestroyView() {
         super.onDestroyView();
         ButterKnife.unbind(this);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        ButterKnife.unbind(this);
         EventBus.getDefault().unregister(this);
     }
 
@@ -250,20 +249,20 @@ public class FoodFragment extends BaseFragment implements Callback<Bean<List<Tod
         public void onResponse(Call<Bean<ResponseCommonBean>> call, Response<Bean<ResponseCommonBean>> response) {
             Bean<ResponseCommonBean> bean = response.body();
             if (bean != null && bean.getCode() == ResponseCode.SUCCESS) {
-                T.showShort(getContext(), "出菜成功");
+                T.showCenterShort(getContext(), "出菜成功");
                 /**出菜成功刷新菜品*/
                 initTodo();
                 EventBus.getDefault().post(new SendEvent(SendEvent.FOOD_FINISH));
-            } else if (bean != null && bean.getCode() == ResponseCode.FAILURE){
-                T.showLong(getContext(), bean.getMessage());
-            }else {
-                T.showLong(getContext(), "出菜未成功，请重新申请");
+            } else if (bean != null && bean.getCode() == ResponseCode.FAILURE) {
+                T.showCenterShort(getContext(), bean.getMessage());
+            } else {
+                T.showCenterShort(getContext(), "出菜未成功，请重新出菜");
             }
         }
 
         @Override
         public void onFailure(Call<Bean<ResponseCommonBean>> call, Throwable t) {
-            T.showLong(getContext(), "出菜未成功，请重新申请");
+            T.showCenterShort(getContext(), "出菜未成功，请重新出菜");
         }
     };
 
@@ -293,8 +292,11 @@ public class FoodFragment extends BaseFragment implements Callback<Bean<List<Tod
         animation.upOut(view);
     }
 
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void reviceMessage(SendEvent event) {
+    /**
+     * 消息判断
+     * @param event
+     */
+    public void foodEvent(SendEvent event) {
         if (event.getType() == SendEvent.FOOD_REFRESH) {
             /**刷新代加工菜品*/
             initTodo();

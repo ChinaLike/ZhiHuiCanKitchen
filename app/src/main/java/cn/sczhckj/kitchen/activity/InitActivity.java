@@ -19,6 +19,7 @@ import cn.sczhckj.kitchen.mode.KitchenImpl;
 import cn.sczhckj.kitchen.overwrite.ProgressDialog;
 import cn.sczhckj.kitchen.overwrite.SettingPopupWindow;
 import cn.sczhckj.kitchen.service.HeartService;
+import cn.sczhckj.kitchen.service.PollService;
 import cn.sczhckj.kitchen.until.AppSystemUntil;
 import cn.sczhckj.kitchen.until.FileUntils;
 
@@ -38,6 +39,8 @@ public class InitActivity extends AppCompatActivity implements OnVersionCheckLis
      */
     private KitchenImpl mKitchen;
 
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -49,7 +52,9 @@ public class InitActivity extends AppCompatActivity implements OnVersionCheckLis
         FileUntils.createFileDir(FileConstant.PATH);
         init();
         startService();
+
     }
+
 
     /**
      * 初始化

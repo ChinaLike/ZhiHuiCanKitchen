@@ -29,6 +29,8 @@ public class PollService extends Service {
      */
     private final long TIME = 20 * 1000;
 
+    private Timer timer;
+
 
     @Nullable
     @Override
@@ -45,6 +47,7 @@ public class PollService extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
+        timer.cancel();
     }
 
     @Override
@@ -56,7 +59,7 @@ public class PollService extends Service {
      * 间隔发送消息
      */
     private void sendMessage() {
-        Timer timer = new Timer();
+        timer = new Timer();
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
