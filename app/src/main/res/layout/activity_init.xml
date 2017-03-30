@@ -3,23 +3,15 @@
     android:id="@+id/activity_init"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/breviary_bg">
-
-    <ProgressBar
-        android:id="@+id/progress_bar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true" />
+    android:background="@drawable/boot_page">
 
     <TextView
         android:id="@+id/title"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/progress_bar"
-        android:layout_marginTop="10dp"
-        android:gravity="center"
-        android:text="数据初始化中..."
-        android:textSize="20sp" />
+        android:layout_alignParentRight="true"
+        android:alpha="0.5"
+        android:text="数据初始化中..." />
 
     <TextView
         android:id="@+id/device_id"
