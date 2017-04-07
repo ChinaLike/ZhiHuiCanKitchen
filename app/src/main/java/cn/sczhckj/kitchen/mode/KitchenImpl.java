@@ -52,7 +52,7 @@ public class KitchenImpl {
      */
     public void foodFinish(TodoBean todoBean, int index, Callback<Bean<ResponseCommonBean>> callback) {
         RequestCommonBean bean = new RequestCommonBean();
-//        bean.setDeviceId(AppSystemUntil.getAndroidID(mContext));
+        bean.setDeviceId(AppSystemUntil.getAndroidID(mContext));
 //        bean.setFoodId(todoBean.getFoodId());
 //        bean.setCateId(todoBean.getCateId());
 //        bean.setDetail(todoBean.getDetails().get(index));
@@ -91,7 +91,6 @@ public class KitchenImpl {
             @Override
             public void onResponse(Call<Bean<VersionBean>> call, Response<Bean<VersionBean>> response) {
                 Bean<VersionBean> bean = response.body();
-                L.d("测试===" + bean);
                 if (bean != null && bean.getCode() == ResponseCode.SUCCESS) {
                     if (bean.getResult() != null && bean.getResult().getCode() != null &&
                             bean.getResult().getCode() > AppSystemUntil.getVersionCode(mContext)) {
