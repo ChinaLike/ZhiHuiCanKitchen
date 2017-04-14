@@ -22,6 +22,8 @@ import cn.sczhckj.kitchen.service.HeartService;
 import cn.sczhckj.kitchen.service.PollService;
 import cn.sczhckj.kitchen.until.AppSystemUntil;
 import cn.sczhckj.kitchen.until.FileUntils;
+import cn.sczhckj.kitchen.until.NetUtils;
+import cn.sczhckj.kitchen.until.show.T;
 
 public class InitActivity extends AppCompatActivity implements OnVersionCheckListenner ,SettingPopupWindow.OnButtonListener{
 
@@ -99,13 +101,17 @@ public class InitActivity extends AppCompatActivity implements OnVersionCheckLis
 
     @Override
     public void onFail() {
-        if (popupWindow == null){
-            popupWindow = new SettingPopupWindow(InitActivity.this);
-        }
-        popupWindow.setOnButtonListener(this);
-        popupWindow.show();
         activityInit.setClickable(true);
         title.setText("初始化失败，点击屏幕重新初始化...");
+        if (NetUtils.isConnected(this)) {
+            if (popupWindow == null) {
+                popupWindow = new SettingPopupWindow(InitActivity.this);
+            }
+            popupWindow.setOnButtonListener(this);
+            popupWindow.show();
+        }else {
+            T.showCenterShort(this,"请检查网络是否连接");
+        }
     }
 
     /**

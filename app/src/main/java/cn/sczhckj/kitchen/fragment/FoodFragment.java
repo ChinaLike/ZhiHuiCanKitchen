@@ -262,7 +262,7 @@ public class FoodFragment extends BaseFragment implements Callback<Bean<List<Tod
 
         @Override
         public void onFailure(Call<Bean<ResponseCommonBean>> call, Throwable t) {
-            T.showCenterShort(getContext(), "出菜未成功，请重新出菜");
+            T.showCenterShort(getContext(), "网络异常，请稍后再试！");
         }
     };
 

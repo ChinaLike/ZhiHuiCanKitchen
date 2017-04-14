@@ -199,7 +199,7 @@ public class PrintFragment extends BaseFragment implements Callback<Bean<List<Do
 
         @Override
         public void onFailure(Call<Bean<ResponseCommonBean>> call, Throwable t) {
-            T.showCenterShort(getContext(), "补打失败");
+            T.showCenterShort(getContext(), "网络异常，请稍后再试！");
         }
     };
 

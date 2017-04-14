@@ -15,8 +15,8 @@ android {
         applicationId "cn.sczhckj.kitchen"
         minSdkVersion 15
         targetSdkVersion 24
-        versionCode 3
-        versionName "0.0.3"
+        versionCode 1
+        versionName "0.0.1"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
