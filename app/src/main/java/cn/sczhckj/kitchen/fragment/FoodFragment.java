@@ -9,13 +9,12 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,7 +35,9 @@ import cn.sczhckj.kitchen.data.response.ResponseCode;
 import cn.sczhckj.kitchen.listenner.OnLableClickListenner;
 import cn.sczhckj.kitchen.mode.KitchenImpl;
 import cn.sczhckj.kitchen.mode.KitchenMode;
+import cn.sczhckj.kitchen.mode.MusicImpl;
 import cn.sczhckj.kitchen.overwrite.DashlineItemDivider;
+import cn.sczhckj.kitchen.until.show.L;
 import cn.sczhckj.kitchen.until.show.T;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -65,6 +66,8 @@ public class FoodFragment extends BaseFragment implements Callback<Bean<List<Tod
     RecyclerView foodRecyclerview;
     @Bind(R.id.food_context_parent)
     LinearLayout foodParent;
+    @Bind(R.id.food_number_code_parent)
+    FrameLayout codeParent;
 
     private View view;
 
@@ -114,6 +117,12 @@ public class FoodFragment extends BaseFragment implements Callback<Bean<List<Tod
      * 布局管理器
      */
     private LinearLayoutManager manager;
+    /**
+     * 是否是刷新请求，不是刷新请求不调用铃声
+     */
+    private boolean isRefresh = true;
+    /**铃声实现*/
+    private MusicImpl mMusic;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -141,6 +150,7 @@ public class FoodFragment extends BaseFragment implements Callback<Bean<List<Tod
         animation = new AnimationImpl(getContext());
         mKitchenMode = new KitchenMode(getContext());
         mKitchen = new KitchenImpl(getContext());
+        mMusic = new MusicImpl(getContext());
         initTodoAdapter();
         initTableAdapter();
         initTodo();
@@ -181,6 +191,9 @@ public class FoodFragment extends BaseFragment implements Callback<Bean<List<Tod
      */
     private List<TodoBean> header(List<TodoBean> mList) {
         if (mList != null && mList.size() > 0) {
+            if (codeParent.getVisibility() == View.GONE) {
+                codeParent.setVisibility(View.VISIBLE);
+            }
             headBean = mList.get(0);
             disposeHeader(headBean);
             mList.remove(0);
@@ -188,6 +201,9 @@ public class FoodFragment extends BaseFragment implements Callback<Bean<List<Tod
             /**每一次刷新时，如果不操作，将会默认选择第一个*/
             currentBean = headBean;
         } else {
+            if (codeParent.getVisibility() == View.VISIBLE) {
+                codeParent.setVisibility(View.GONE);
+            }
             foodName.setText("暂无菜品");
             mTableAdapter.notifyDataSetChanged(null);
             EventBus.getDefault().post(new SendEvent(SendEvent.FOOD_LABLE, "暂无菜品", 0));
@@ -229,8 +245,14 @@ public class FoodFragment extends BaseFragment implements Callback<Bean<List<Tod
     public void onResponse(Call<Bean<List<TodoBean>>> call, Response<Bean<List<TodoBean>>> response) {
         Bean<List<TodoBean>> bean = response.body();
         if (bean != null && bean.getCode() == ResponseCode.SUCCESS) {
+            //存储到当前集合，自动刷新时比较新数据
+            mMusic.setList(bean.getResult());
             todoBeen = bean.getResult();
             mTodoAdapter.notifyDataSetChanged(header(todoBeen));
+            if (isRefresh){
+                //如果是刷新调用铃声，通知出菜员
+                mMusic.play();
+            }
         } else {
 
         }
@@ -249,9 +271,11 @@ public class FoodFragment extends BaseFragment implements Callback<Bean<List<Tod
         public void onResponse(Call<Bean<ResponseCommonBean>> call, Response<Bean<ResponseCommonBean>> response) {
             Bean<ResponseCommonBean> bean = response.body();
             if (bean != null && bean.getCode() == ResponseCode.SUCCESS) {
+                currentBean = null;
                 T.showCenterShort(getContext(), "出菜成功");
                 /**出菜成功刷新菜品*/
                 initTodo();
+                isRefresh = false;
                 EventBus.getDefault().post(new SendEvent(SendEvent.FOOD_FINISH));
             } else if (bean != null && bean.getCode() == ResponseCode.FAILURE) {
                 T.showCenterShort(getContext(), bean.getMessage());
@@ -294,18 +318,23 @@ public class FoodFragment extends BaseFragment implements Callback<Bean<List<Tod
 
     /**
      * 消息判断
+     *
      * @param event
      */
     public void foodEvent(SendEvent event) {
         if (event.getType() == SendEvent.FOOD_REFRESH) {
             /**刷新代加工菜品*/
+            mMusic.setNum(headBean,todoBeen);
             initTodo();
+            isRefresh =true;
         } else if (event.getType() == SendEvent.PRINT_LABLE) {
             /**刷新打印记录缩略信息*/
             setPrintTitle(event.getName(), event.getTable());
         } else if (event.getType() == SendEvent.KEY_AFFIRM && MainActivity.isFoodView) {
             /**出菜，出菜顺序是按照第一项第一桌顺序出菜*/
-            mKitchen.foodFinish(currentBean, 0, finishCallback);
+            if (currentBean != null) {
+                mKitchen.foodFinish(currentBean, 0, finishCallback);
+            }
         } else if (event.getType() == SendEvent.KEY_NEXT && MainActivity.isFoodView) {
             /**下一个*/
             next();

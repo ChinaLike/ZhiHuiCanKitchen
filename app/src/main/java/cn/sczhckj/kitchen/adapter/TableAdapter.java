@@ -68,17 +68,32 @@ public class TableAdapter extends RecyclerView.Adapter<TableAdapter.TableViewHol
      * @param isShow 是否选中
      */
     public void handleShow(boolean isShow) {
-        if (mList != null && isShow) {
-            for (int i = 0; i < mList.size(); i++) {
-                if (i == 0) {
-                    mList.get(i).setSelect(true);
-                } else {
+//        if (mList != null && isShow) {
+//            for (int i = 0; i < mList.size(); i++) {
+//                if (i == 0) {
+//                    mList.get(i).setSelect(true);
+//                } else {
+//                    mList.get(i).setSelect(false);
+//                }
+//            }
+//        }else {
+//            for (int i = 0; i < mList.size(); i++) {
+//                mList.get(i).setSelect(false);
+//            }
+//        }
+        if (mList != null) {
+            if (isShow) {
+                for (int i = 0; i < mList.size(); i++) {
+                    if (i == 0) {
+                        mList.get(i).setSelect(true);
+                    } else {
+                        mList.get(i).setSelect(false);
+                    }
+                }
+            } else {
+                for (int i = 0; i < mList.size(); i++) {
                     mList.get(i).setSelect(false);
                 }
-            }
-        } else {
-            for (int i = 0; i < mList.size(); i++) {
-                mList.get(i).setSelect(false);
             }
         }
         notifyDataSetChanged();

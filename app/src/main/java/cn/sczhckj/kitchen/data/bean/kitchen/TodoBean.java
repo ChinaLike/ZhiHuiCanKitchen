@@ -43,7 +43,11 @@ public class TodoBean {
     }
 
     public Integer getCount() {
-        return count;
+        if (details == null){
+            return 0;
+        }else {
+            return details.size();
+        }
     }
 
     public void setCount(Integer count) {
