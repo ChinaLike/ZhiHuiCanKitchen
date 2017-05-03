@@ -5,6 +5,7 @@ import java.util.List;
 import cn.sczhckj.kitchen.data.bean.Bean;
 import cn.sczhckj.kitchen.data.bean.ResponseCommonBean;
 import cn.sczhckj.kitchen.data.bean.device.VersionBean;
+import cn.sczhckj.kitchen.data.bean.kitchen.DebookBean;
 import cn.sczhckj.kitchen.data.bean.kitchen.TodoBean;
 import cn.sczhckj.kitchen.data.bean.kitchen.DoneBean;
 import okhttp3.ResponseBody;
@@ -50,6 +51,13 @@ public interface RetrofitService {
     @FormUrlEncoded
     @POST("rest/kitchen/print")
     Call<Bean<ResponseCommonBean>> print(@Field("p") String p);
+
+    /**
+     * 退菜清单
+     */
+    @FormUrlEncoded
+    @POST("rest/kitchen/debookList")
+    Call<Bean<List<DebookBean>>> debook(@Field("p") String p);
 
     /**
      * 版本管理信息

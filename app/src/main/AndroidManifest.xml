@@ -27,6 +27,8 @@
 
         <service android:name=".service.HeartService"></service>
 
+        <service android:name=".service.WebSocketService"></service>
+
         <activity
             android:name=".activity.InitActivity"
             android:keepScreenOn="true"

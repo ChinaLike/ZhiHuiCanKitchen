@@ -1,5 +1,9 @@
 package cn.sczhckj.kitchen.data.bean;
 
+import java.util.List;
+
+import cn.sczhckj.kitchen.data.bean.kitchen.DebookBean;
+
 /**
  * @ describe:  WebSocket通用Bean
  * @ author: Like on 2016/12/21.
@@ -13,6 +17,8 @@ public class PushCommonBean {
     private Integer arriveCount;//上菜数量
 
     private String message;//消息内容
+
+    private DebookBean debook;//退订
 
     public Integer getId() {
         return id;
@@ -46,6 +52,14 @@ public class PushCommonBean {
         this.message = message;
     }
 
+    public DebookBean getDebook() {
+        return debook;
+    }
+
+    public void setDebook(DebookBean debook) {
+        this.debook = debook;
+    }
+
     @Override
     public String toString() {
         return "{" +
@@ -53,6 +67,7 @@ public class PushCommonBean {
                 ", cateId=" + cateId +
                 ", arriveCount=" + arriveCount +
                 ", message='" + message + '\'' +
+                ", debook=" + debook +
                 '}';
     }
 }

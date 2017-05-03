@@ -70,6 +70,7 @@ public class TodoAdapter extends RecyclerView.Adapter<TodoAdapter.TodoViewHolder
 
         holder.foodName.setText(bean.getName());
         holder.foodCount.setText(bean.getCount() + "");
+        holder.foodUtil.setText(bean.getUnit());
 
         holder.parent.setOnClickListener(new View.OnClickListener() {
             @Override

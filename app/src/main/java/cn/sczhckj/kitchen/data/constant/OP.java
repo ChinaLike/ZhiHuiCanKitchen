@@ -33,6 +33,10 @@ public interface OP {
      * 刷新后厨
      */
     String PUSH_REFRESH = "refresh";
+    /**
+     * 推送退单
+     */
+    String PUSH_REBOOK = "debook";
 
     /**
      * APP推送 心跳
@@ -42,5 +46,8 @@ public interface OP {
      * 异常收集
      */
     String EXCEPTION = "exception";
-
+    /**
+     * 退菜清单
+     */
+    String KITCHEN_DEBOOK = "debookList";
 }

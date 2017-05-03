@@ -14,6 +14,7 @@ public class TodoBean {
     private Integer cateId;//分类ID
     private String name;//菜品名称
     private Integer count;//总共份数
+    private String unit;//产品单位
     private List<DetailBean> details;//单个菜品信息
 
     private boolean isSelect;//本地字段，Item是否选中
@@ -70,6 +71,14 @@ public class TodoBean {
         isSelect = select;
     }
 
+    public String getUnit() {
+        return unit;
+    }
+
+    public void setUnit(String unit) {
+        this.unit = unit;
+    }
+
     @Override
     public String toString() {
         return "{" +
@@ -77,7 +86,9 @@ public class TodoBean {
                 ", cateId=" + cateId +
                 ", name='" + name + '\'' +
                 ", count=" + count +
+                ", unit='" + unit + '\'' +
                 ", details=" + details +
+                ", isSelect=" + isSelect +
                 '}';
     }
 }

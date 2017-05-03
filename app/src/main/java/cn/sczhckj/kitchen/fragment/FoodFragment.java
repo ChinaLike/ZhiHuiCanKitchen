@@ -6,9 +6,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -69,8 +67,6 @@ public class FoodFragment extends BaseFragment implements Callback<Bean<List<Tod
     @Bind(R.id.food_number_code_parent)
     FrameLayout codeParent;
 
-    private View view;
-
     /**
      * 后厨请求数据
      */
@@ -121,36 +117,26 @@ public class FoodFragment extends BaseFragment implements Callback<Bean<List<Tod
      * 是否是刷新请求，不是刷新请求不调用铃声
      */
     private boolean isRefresh = true;
-    /**铃声实现*/
+    /**
+     * 铃声实现
+     */
     private MusicImpl mMusic;
 
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
-
-    @Nullable
-    @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        view = inflater.inflate(R.layout.fragment_food, null, false);
-        ButterKnife.bind(this, view);
-        return view;
-    }
 
     @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        init();
+    public int setLayoutId() {
+        return R.layout.fragment_food;
     }
 
     /**
      * 初始化
      */
-    private void init() {
+    @Override
+    public void init() {
         animation = new AnimationImpl(getContext());
         mKitchenMode = new KitchenMode(getContext());
         mKitchen = new KitchenImpl(getContext());
-        mMusic = new MusicImpl(getContext());
+        mMusic = new MusicImpl(getContext(),MusicImpl.ADD);
         initTodoAdapter();
         initTableAdapter();
         initTodo();
@@ -159,7 +145,7 @@ public class FoodFragment extends BaseFragment implements Callback<Bean<List<Tod
     /**
      * 初始化代加工菜品
      */
-    private void initTodo() {
+    public void initTodo() {
         mKitchenMode.todo(this);
     }
 
@@ -197,7 +183,7 @@ public class FoodFragment extends BaseFragment implements Callback<Bean<List<Tod
             headBean = mList.get(0);
             disposeHeader(headBean);
             mList.remove(0);
-            EventBus.getDefault().post(new SendEvent(SendEvent.FOOD_LABLE, headBean.getName(), headBean.getDetails().size()));
+            EventBus.getDefault().post(new SendEvent(SendEvent.FOOD_LABLE, headBean.getName(), headBean.getDetails().size(),headBean.getUnit()));
             /**每一次刷新时，如果不操作，将会默认选择第一个*/
             currentBean = headBean;
         } else {
@@ -206,7 +192,7 @@ public class FoodFragment extends BaseFragment implements Callback<Bean<List<Tod
             }
             foodName.setText("暂无菜品");
             mTableAdapter.notifyDataSetChanged(null);
-            EventBus.getDefault().post(new SendEvent(SendEvent.FOOD_LABLE, "暂无菜品", 0));
+            EventBus.getDefault().post(new SendEvent(SendEvent.FOOD_LABLE, "暂无菜品", 0,""));
         }
         return mList;
     }
@@ -249,7 +235,7 @@ public class FoodFragment extends BaseFragment implements Callback<Bean<List<Tod
             mMusic.setList(bean.getResult());
             todoBeen = bean.getResult();
             mTodoAdapter.notifyDataSetChanged(header(todoBeen));
-            if (isRefresh){
+            if (isRefresh) {
                 //如果是刷新调用铃声，通知出菜员
                 mMusic.play();
             }
@@ -316,6 +302,7 @@ public class FoodFragment extends BaseFragment implements Callback<Bean<List<Tod
         animation.upOut(view);
     }
 
+
     /**
      * 消息判断
      *
@@ -324,21 +311,21 @@ public class FoodFragment extends BaseFragment implements Callback<Bean<List<Tod
     public void foodEvent(SendEvent event) {
         if (event.getType() == SendEvent.FOOD_REFRESH) {
             /**刷新代加工菜品*/
-            mMusic.setNum(headBean,todoBeen);
+            mMusic.setNum(headBean, todoBeen);
             initTodo();
-            isRefresh =true;
+            isRefresh = true;
         } else if (event.getType() == SendEvent.PRINT_LABLE) {
             /**刷新打印记录缩略信息*/
             setPrintTitle(event.getName(), event.getTable());
-        } else if (event.getType() == SendEvent.KEY_AFFIRM && MainActivity.isFoodView) {
+        } else if (event.getType() == SendEvent.KEY_AFFIRM && MainActivity.currentView == MainActivity.FOOD) {
             /**出菜，出菜顺序是按照第一项第一桌顺序出菜*/
             if (currentBean != null) {
                 mKitchen.foodFinish(currentBean, 0, finishCallback);
             }
-        } else if (event.getType() == SendEvent.KEY_NEXT && MainActivity.isFoodView) {
+        } else if (event.getType() == SendEvent.KEY_NEXT && MainActivity.currentView == MainActivity.FOOD) {
             /**下一个*/
             next();
-        } else if (event.getType() == SendEvent.KEY_PRE && MainActivity.isFoodView) {
+        } else if (event.getType() == SendEvent.KEY_PRE && MainActivity.currentView == MainActivity.FOOD) {
             /**上一个*/
             pre();
         } else if (event.getType() == SendEvent.NON_AUTO_FOOD_FINISH) {

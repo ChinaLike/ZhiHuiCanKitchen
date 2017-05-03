@@ -10,12 +10,20 @@ import cn.sczhckj.kitchen.R;
 import cn.sczhckj.kitchen.data.bean.kitchen.TodoBean;
 
 /**
- * @ describe: 新菜提醒
+ * @ describe: 新菜提醒,退菜提醒
  * @ author: Like on 2017-04-18.
  * @ email: 572919350@qq.com
  */
 
 public class MusicImpl {
+    /**
+     * 刷新有新增
+     */
+    public static int ADD = 0;
+    /**
+     * 退菜
+     */
+    public static int DEBOOK = 1;
 
     private MediaPlayer mMediaPlayer;
     /**
@@ -27,18 +35,31 @@ public class MusicImpl {
      */
     private List<TodoBean> list;
 
-    public MusicImpl(Context mContext) {
+    private int type;
+
+    public MusicImpl(Context mContext, int type) {
+        this(mContext, type, R.raw.dd);
+    }
+
+    public MusicImpl(Context mContext, int type, int rawId) {
+        this.type = type;
         mList = new ArrayList<>();
         list = new ArrayList<>();
-        mMediaPlayer = MediaPlayer.create(mContext, R.raw.dd);
+        mMediaPlayer = MediaPlayer.create(mContext, rawId);
     }
 
     /**
-     * 播放
+     * 播放音乐
      */
     public void play() {
-        boolean isHaveNewFood = isHaveNewFood();
-        if (isHaveNewFood) {
+        if (type == ADD) {
+            boolean isHaveNewFood = isHaveNewFood();
+            if (isHaveNewFood) {
+                if (!mMediaPlayer.isPlaying()) {
+                    mMediaPlayer.start();
+                }
+            }
+        } else if (type == DEBOOK) {
             if (!mMediaPlayer.isPlaying()) {
                 mMediaPlayer.start();
             }

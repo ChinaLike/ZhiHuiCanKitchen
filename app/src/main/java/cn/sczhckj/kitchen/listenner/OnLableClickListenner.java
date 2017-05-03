@@ -15,6 +15,10 @@ public interface OnLableClickListenner {
      * 小票
      */
     int PRINT_LABLE = 1;
+    /**
+     * 退点
+     */
+    int DEBOOK_LABLE = 2;
 
     void onLableClick(int type);
 }

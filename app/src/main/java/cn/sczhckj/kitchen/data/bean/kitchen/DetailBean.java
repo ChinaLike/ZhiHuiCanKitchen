@@ -13,6 +13,7 @@ public class DetailBean {
     private Integer recordId;//消费记录ID
     private Integer detailId;//明细记录ID
     private Integer taskSubId;//子任务ID
+    private int attribute;//台桌属性  0-普通台桌 1-催单台桌  默认为0
 
     private boolean isSelect;
 
@@ -64,6 +65,14 @@ public class DetailBean {
         isSelect = select;
     }
 
+    public int getAttribute() {
+        return attribute;
+    }
+
+    public void setAttribute(int attribute) {
+        this.attribute = attribute;
+    }
+
     @Override
     public String toString() {
         return "{" +
@@ -72,6 +81,8 @@ public class DetailBean {
                 ", recordId=" + recordId +
                 ", detailId=" + detailId +
                 ", taskSubId=" + taskSubId +
+                ", attribute=" + attribute +
+                ", isSelect=" + isSelect +
                 '}';
     }
 }

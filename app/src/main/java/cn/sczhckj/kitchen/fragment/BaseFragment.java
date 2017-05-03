@@ -1,9 +1,16 @@
 package cn.sczhckj.kitchen.fragment;
 
+import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 
+import butterknife.ButterKnife;
+import cn.sczhckj.kitchen.R;
 import cn.sczhckj.kitchen.listenner.OnLableClickListenner;
 
 /**
@@ -13,6 +20,33 @@ import cn.sczhckj.kitchen.listenner.OnLableClickListenner;
  */
 
 public abstract class BaseFragment extends Fragment {
+    /**
+     * 视图
+     */
+    protected View view;
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+    }
+
+    @Nullable
+    @Override
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        view = inflater.inflate(setLayoutId(), null, false);
+        ButterKnife.bind(this, view);
+        return view;
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        init();
+    }
+
+    public abstract int setLayoutId();
+
+    public abstract void init();
 
     /**
      * 标签被点击

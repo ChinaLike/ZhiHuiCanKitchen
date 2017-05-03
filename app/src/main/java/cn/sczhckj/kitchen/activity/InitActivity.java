@@ -20,6 +20,7 @@ import cn.sczhckj.kitchen.overwrite.ProgressDialog;
 import cn.sczhckj.kitchen.overwrite.SettingPopupWindow;
 import cn.sczhckj.kitchen.service.HeartService;
 import cn.sczhckj.kitchen.service.PollService;
+import cn.sczhckj.kitchen.service.WebSocketService;
 import cn.sczhckj.kitchen.until.AppSystemUntil;
 import cn.sczhckj.kitchen.until.FileUntils;
 import cn.sczhckj.kitchen.until.NetUtils;
@@ -54,7 +55,7 @@ public class InitActivity extends AppCompatActivity implements OnVersionCheckLis
         FileUntils.createFileDir(FileConstant.PATH);
         init();
         startService();
-
+        startWebSocket();
     }
 
 
@@ -73,6 +74,12 @@ public class InitActivity extends AppCompatActivity implements OnVersionCheckLis
      */
     private void startService() {
         Intent intent = new Intent(InitActivity.this, HeartService.class);
+        startService(intent);
+    }
+
+    /**开启推送*/
+    private void startWebSocket(){
+        Intent intent = new Intent(InitActivity.this, WebSocketService.class);
         startService(intent);
     }
 

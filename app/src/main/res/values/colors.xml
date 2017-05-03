@@ -9,6 +9,7 @@
 
     <!--缩略图背景-->
     <color name="breviary_bg">#1CBCA0</color>
+    <color name="debook_bg">#CCCCCC</color>
     <color name="breviary_shadow">#F0F3F2</color>
 
     <!--标签-打印背景-->
@@ -18,6 +19,7 @@
 
     <!--圆形控件颜色-->
     <color name="orange">#FE9F1B</color>
+    <color name="red">#FE761B</color>
 
     <!--小票Item-->
     <color name="print_item_text">#3c3c3c</color>

@@ -58,9 +58,6 @@ public class PrintFragment extends BaseFragment implements Callback<Bean<List<Do
     RelativeLayout foodBreviaryParent;
     @Bind(R.id.print_recy)
     RecyclerView printRecyclerView;
-
-    private View view;
-
     /**
      * 获取数据
      */
@@ -97,28 +94,15 @@ public class PrintFragment extends BaseFragment implements Callback<Bean<List<Do
     private LinearLayoutManager manager;
 
     @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
-
-    @Nullable
-    @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        view = inflater.inflate(R.layout.fragment_print, null, false);
-        ButterKnife.bind(this, view);
-        return view;
-    }
-
-    @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        init();
+    public int setLayoutId() {
+        return R.layout.fragment_print;
     }
 
     /**
      * 数据初始化
      */
-    private void init() {
+    @Override
+    public void init() {
         initAdapter();
         animation = new AnimationImpl(getContext());
         mKitchenMode = new KitchenMode(getContext());
@@ -222,12 +206,13 @@ public class PrintFragment extends BaseFragment implements Callback<Bean<List<Do
      *
      * @param name  菜品名称
      * @param count 数量
+     * @param unit 单位
      */
-    public void setFoodTitle(String name, int count) {
+    public void setFoodTitle(String name, int count,String unit) {
         if (count > 0) {
             breviaryFoodConut.setVisibility(View.VISIBLE);
             breviaryFoodName.setText(name);
-            breviaryFoodConut.setText(count + "份");
+            breviaryFoodConut.setText(count + ""+unit);
         } else {
             breviaryFoodConut.setVisibility(View.GONE);
             breviaryFoodName.setText(name);
@@ -241,16 +226,16 @@ public class PrintFragment extends BaseFragment implements Callback<Bean<List<Do
     public void printEvent(SendEvent event) {
         if (event.getType() == SendEvent.FOOD_LABLE) {
             /**刷新待加工缩略信息*/
-            setFoodTitle(event.getName(), event.getCount());
-        } else if (event.getType() == SendEvent.KEY_AFFIRM && !MainActivity.isFoodView) {
+            setFoodTitle(event.getName(), event.getCount() ,event.getUnit());
+        } else if (event.getType() == SendEvent.KEY_AFFIRM && MainActivity.currentView == MainActivity.PRINT) {
             /**按键补打*/
             if (doneBean != null) {
                 mKitchen.print(doneBean, printCallback);
             }
-        } else if (event.getType() == SendEvent.KEY_NEXT && !MainActivity.isFoodView) {
+        } else if (event.getType() == SendEvent.KEY_NEXT && MainActivity.currentView == MainActivity.PRINT) {
             /**下一个*/
             next();
-        } else if (event.getType() == SendEvent.KEY_PRE && !MainActivity.isFoodView) {
+        } else if (event.getType() == SendEvent.KEY_PRE && MainActivity.currentView == MainActivity.PRINT) {
             /**上一个*/
             pre();
         } else if (event.getType() == SendEvent.FOOD_FINISH) {

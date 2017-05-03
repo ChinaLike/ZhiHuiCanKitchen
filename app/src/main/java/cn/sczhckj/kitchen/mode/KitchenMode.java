@@ -8,6 +8,7 @@ import cn.sczhckj.kitchen.data.bean.Bean;
 import cn.sczhckj.kitchen.data.bean.RequestCommonBean;
 import cn.sczhckj.kitchen.data.bean.ResponseCommonBean;
 import cn.sczhckj.kitchen.data.bean.device.VersionBean;
+import cn.sczhckj.kitchen.data.bean.kitchen.DebookBean;
 import cn.sczhckj.kitchen.data.bean.kitchen.DoneBean;
 import cn.sczhckj.kitchen.data.bean.kitchen.TodoBean;
 import cn.sczhckj.kitchen.data.constant.OP;
@@ -93,6 +94,21 @@ public class KitchenMode {
                 .time()
                 .bean(bean);
         Call<Bean<ResponseCommonBean>> call = RetrofitRequest.service().print(restRequest.toRequestString());
+        call.enqueue(callback);
+    }
+
+    /**
+     * 获取退菜清单
+     * @param callback
+     */
+    public void debook(Callback<Bean<List<DebookBean>>> callback) {
+        RequestCommonBean bean = new RequestCommonBean();
+        bean.setDeviceId(AppSystemUntil.getAndroidID(mContext));
+        RestRequest<RequestCommonBean> restRequest = JSONRestRequest.Builder.build(RequestCommonBean.class)
+                .op(OP.KITCHEN_DEBOOK)
+                .time()
+                .bean(bean);
+        Call<Bean<List<DebookBean>>> call = RetrofitRequest.service().debook(restRequest.toRequestString());
         call.enqueue(callback);
     }
 

@@ -5,6 +5,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import org.greenrobot.eventbus.EventBus;
@@ -15,6 +16,7 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import cn.sczhckj.kitchen.R;
 import cn.sczhckj.kitchen.data.bean.kitchen.DetailBean;
+import cn.sczhckj.kitchen.data.constant.TypeCode;
 import cn.sczhckj.kitchen.data.event.SendEvent;
 
 /**
@@ -24,6 +26,7 @@ import cn.sczhckj.kitchen.data.event.SendEvent;
  */
 
 public class TableAdapter extends RecyclerView.Adapter<TableAdapter.TableViewHolder> {
+
 
     private Context mContext;
 
@@ -48,6 +51,15 @@ public class TableAdapter extends RecyclerView.Adapter<TableAdapter.TableViewHol
         } else {
             holder.tableName.setTextColor(0xFFFFFFFF);
         }
+        //设置催单
+        if (bean.getAttribute() == TypeCode.COMMON){
+            holder.tableFlagParent.setVisibility(View.GONE);
+        }else {
+            holder.tableFlagParent.setVisibility(View.VISIBLE);
+            if (bean.getAttribute() == TypeCode.REMINDER){
+                holder.tableFlag.setText("催");
+            }
+        }
         holder.tableName.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -68,19 +80,6 @@ public class TableAdapter extends RecyclerView.Adapter<TableAdapter.TableViewHol
      * @param isShow 是否选中
      */
     public void handleShow(boolean isShow) {
-//        if (mList != null && isShow) {
-//            for (int i = 0; i < mList.size(); i++) {
-//                if (i == 0) {
-//                    mList.get(i).setSelect(true);
-//                } else {
-//                    mList.get(i).setSelect(false);
-//                }
-//            }
-//        }else {
-//            for (int i = 0; i < mList.size(); i++) {
-//                mList.get(i).setSelect(false);
-//            }
-//        }
         if (mList != null) {
             if (isShow) {
                 for (int i = 0; i < mList.size(); i++) {
@@ -107,6 +106,10 @@ public class TableAdapter extends RecyclerView.Adapter<TableAdapter.TableViewHol
     static class TableViewHolder extends RecyclerView.ViewHolder {
         @Bind(R.id.table_name)
         TextView tableName;
+        @Bind(R.id.table_flag)
+        TextView tableFlag;
+        @Bind(R.id.table_flag_parent)
+        FrameLayout tableFlagParent;
 
         public TableViewHolder(View itemView) {
             super(itemView);

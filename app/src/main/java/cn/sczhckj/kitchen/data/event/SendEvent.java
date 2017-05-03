@@ -1,5 +1,8 @@
 package cn.sczhckj.kitchen.data.event;
 
+import java.util.List;
+
+import cn.sczhckj.kitchen.data.bean.kitchen.DebookBean;
 import cn.sczhckj.kitchen.data.bean.kitchen.DetailBean;
 import cn.sczhckj.kitchen.data.bean.kitchen.TodoBean;
 
@@ -47,6 +50,10 @@ public class SendEvent {
      * 手动点击补打
      */
     public final static int NON_AUTO_PRINT = 8;
+    /**
+     * 退单
+     */
+    public final static int PUSH_DEBOOK = 9;
 
     private int type;//类型
 
@@ -62,6 +69,10 @@ public class SendEvent {
 
     private TodoBean bean;//加工菜品
 
+    private DebookBean debook;//退单菜品
+
+    private String unit;//商品单位
+
     public SendEvent(int type) {
         this.type = type;
     }
@@ -71,16 +82,22 @@ public class SendEvent {
         this.isHeader = isHeader;
     }
 
+    public SendEvent(int type, DebookBean debook) {
+        this.type = type;
+        this.debook = debook;
+    }
+
     public SendEvent(int type, String name, String table) {
         this.type = type;
         this.name = name;
         this.table = table;
     }
 
-    public SendEvent(int type, String name, int count) {
+    public SendEvent(int type, String name, int count,String unit) {
         this.type = type;
         this.name = name;
         this.count = count;
+        this.unit = unit;
     }
 
     public SendEvent(int type, int postion, boolean isHeader) {
@@ -133,5 +150,21 @@ public class SendEvent {
 
     public void setBean(TodoBean bean) {
         this.bean = bean;
+    }
+
+    public DebookBean getDebook() {
+        return debook;
+    }
+
+    public void setDebook(DebookBean debook) {
+        this.debook = debook;
+    }
+
+    public String getUnit() {
+        return unit;
+    }
+
+    public void setUnit(String unit) {
+        this.unit = unit;
     }
 }

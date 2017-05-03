@@ -29,6 +29,10 @@
     <dimen name="food_item_padding">35dp</dimen>
     <dimen name="food_item_unitl">11sp</dimen>
 
+    <!--退菜Item的尺寸-->
+    <dimen name="debook_item_height">100dp</dimen>
+    <dimen name="debook_item_text_size">18sp</dimen>
+
     <!--圆角-->
     <dimen name="corners">5dp</dimen>
     <dimen name="hint_line">1dp</dimen>
